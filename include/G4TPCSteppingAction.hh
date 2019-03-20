@@ -23,41 +23,41 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aSteppingAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
+// $Id: G4TPCSteppingAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
 // 
-/// \file B4aSteppingAction.hh
-/// \brief Definition of the B4aSteppingAction class
+/// \file G4TPCSteppingAction.hh
+/// \brief Definition of the G4TPCSteppingAction class
 
-#ifndef B4aSteppingAction_h
-#define B4aSteppingAction_h 1
+#ifndef G4TPCSteppingAction_h
+#define G4TPCSteppingAction_h 1
 
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
 
-class B4DetectorConstruction;
-class B4aEventAction;
+class G4TPCDetectorConstruction;
+class G4TPCEventAction;
 class G4VPhysicalVolume;
 
 /// Stepping action class.
 ///
-/// In UserSteppingAction() there are collected the energy deposit and track 
+/// In UserSteppingAction() there are collected the energy deposit and track
 /// lengths of charged particles in Absober and Gap layers and
-/// updated in B4aEventAction.
+/// updated in G4TPCEventAction.
 
-class B4aSteppingAction : public G4UserSteppingAction
+class G4TPCSteppingAction : public G4UserSteppingAction
 {
 public:
-  B4aSteppingAction(const B4DetectorConstruction* detectorConstruction,
-                    B4aEventAction* eventAction);
-  virtual ~B4aSteppingAction();
+  G4TPCSteppingAction(const G4TPCDetectorConstruction* detectorConstruction,
+                    G4TPCEventAction* eventAction);
+  virtual ~G4TPCSteppingAction();
 
   virtual void UserSteppingAction(const G4Step* step);
 
   G4int getLayerNumber(float z, G4VPhysicalVolume* volume);
-    
+
 private:
-  const B4DetectorConstruction* fDetConstruction;
-  B4aEventAction*  fEventAction;  
+  const G4TPCDetectorConstruction* fDetConstruction;
+  G4TPCEventAction*  fEventAction;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

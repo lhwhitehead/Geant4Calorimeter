@@ -23,13 +23,13 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: exampleB4a.cc 86065 2014-11-07 08:51:15Z gcosmo $
+// $Id: exampleG4TPC.cc 86065 2014-11-07 08:51:15Z gcosmo $
 //
-/// \file exampleB4a.cc
-/// \brief Main program of the B4a example
+/// \file exampleG4TPC.cc
+/// \brief Main program of the G4TPC example
 
-#include "B4DetectorConstruction.hh"
-#include "B4aActionInitialization.hh"
+#include "G4TPCDetectorConstruction.hh"
+#include "G4TPCActionInitialization.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -53,7 +53,7 @@
 namespace {
   void PrintUsage() {
     G4cerr << " Usage: " << G4endl;
-    G4cerr << " exampleB4a [-m macro ] [-u UIsession] [-t nThreads]" << G4endl;
+    G4cerr << " exampleG4TPC [-m macro ] [-u UIsession] [-t nThreads]" << G4endl;
     G4cerr << "   note: -t option is available only for multi-threaded mode."
            << G4endl;
   }
@@ -113,7 +113,7 @@ int main(int argc,char** argv)
 
   // Set mandatory initialization classes
   //
-  B4DetectorConstruction* detConstruction = new B4DetectorConstruction();
+  G4TPCDetectorConstruction* detConstruction = new G4TPCDetectorConstruction();
   runManager->SetUserInitialization(detConstruction);
 
   //G4VModularPhysicsList* physicsList = new FTFP_BERT; <- Original
@@ -121,8 +121,8 @@ int main(int argc,char** argv)
   physicsList->RegisterPhysics(new G4StepLimiterPhysics()); // Has to be added to limit step size
   runManager->SetUserInitialization(physicsList);
     
-  B4aActionInitialization* actionInitialization
-     = new B4aActionInitialization(detConstruction);
+  G4TPCActionInitialization* actionInitialization
+     = new G4TPCActionInitialization(detConstruction);
   runManager->SetUserInitialization(actionInitialization);
   
   // Initialize visualization

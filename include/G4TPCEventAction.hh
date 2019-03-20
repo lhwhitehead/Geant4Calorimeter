@@ -23,13 +23,13 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aEventAction.hh 75215 2013-10-29 16:07:06Z gcosmo $
+// $Id: G4TPCEventAction.hh 75215 2013-10-29 16:07:06Z gcosmo $
 // 
-/// \file B4aEventAction.hh
-/// \brief Definition of the B4aEventAction class
+/// \file G4TPCEventAction.hh
+/// \brief Definition of the G4TPCEventAction class
 
-#ifndef B4aEventAction_h
-#define B4aEventAction_h 1
+#ifndef G4TPCEventAction_h
+#define G4TPCEventAction_h 1
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
@@ -43,15 +43,15 @@
 /// which are collected step by step via the functions
 /// - AddAbs(), AddGap()
 
-class B4aEventAction : public G4UserEventAction
+class G4TPCEventAction : public G4UserEventAction
 {
   public:
-    B4aEventAction();
-    virtual ~B4aEventAction();
+    G4TPCEventAction();
+    virtual ~G4TPCEventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
     virtual void    EndOfEventAction(const G4Event* event);
-    
+
     void AddAbs(G4double de, G4double dl);
     void AddAbs2(G4double de, G4double dl);
     void AddGap(G4double de, G4double dl);
@@ -63,7 +63,7 @@ class B4aEventAction : public G4UserEventAction
   private:
     G4double  fEnergyAbs;
     G4double  fEnergyGap;
-    G4double  fTrackLAbs; 
+    G4double  fTrackLAbs;
     G4double  fTrackLGap;
     std::vector<float> m_Z;
     std::vector<float> m_Energy;
@@ -74,45 +74,43 @@ class B4aEventAction : public G4UserEventAction
 
 // inline functions
 
-inline void B4aEventAction::AddAbs(G4double de, G4double dl) {
-  fEnergyAbs += de; 
-  fTrackLAbs += dl;
-}
-
-inline void B4aEventAction::AddAbs2(G4double de, G4double dl) {
+inline void G4TPCEventAction::AddAbs(G4double de, G4double dl) {
   fEnergyAbs += de;
   fTrackLAbs += dl;
 }
 
-inline void B4aEventAction::AddGap(G4double de, G4double dl) {
-  fEnergyGap += de; 
-  fTrackLGap += dl;
+inline void G4TPCEventAction::AddAbs2(G4double de, G4double dl) {
+  fEnergyAbs += de;
+  fTrackLAbs += dl;
 }
 
-inline void B4aEventAction::AddGap2(G4double de, G4double dl) {
+inline void G4TPCEventAction::AddGap(G4double de, G4double dl) {
   fEnergyGap += de;
   fTrackLGap += dl;
 }
- 
-inline void B4aEventAction::AddEZ(G4double de, G4double z, G4int layer){
+
+inline void G4TPCEventAction::AddGap2(G4double de, G4double dl) {
+  fEnergyGap += de;
+  fTrackLGap += dl;
+}
+
+inline void G4TPCEventAction::AddEZ(G4double de, G4double z, G4int layer){
   m_Energy.push_back(de);
   m_Z.push_back(z);
   m_Layer.push_back(layer);
 }
 
-inline void B4aEventAction::AddAbsE(G4double de, G4int layer){
+inline void G4TPCEventAction::AddAbsE(G4double de, G4int layer){
   if (layer >= 0 and layer < 30)
     m_AbsEnergy.at(layer) += de;
 }
 
-inline void B4aEventAction::AddGapE(G4double de, G4int layer){
+inline void G4TPCEventAction::AddGapE(G4double de, G4int layer){
   if (layer >= 0 and layer < 30)
     m_GapEnergy.at(layer) += de;
 }
 
-                
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 
-    

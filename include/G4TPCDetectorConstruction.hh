@@ -23,13 +23,13 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4DetectorConstruction.hh 75215 2013-10-29 16:07:06Z gcosmo $
+// $Id: G4TPCDetectorConstruction.hh 75215 2013-10-29 16:07:06Z gcosmo $
 // 
-/// \file B4DetectorConstruction.hh
-/// \brief Definition of the B4DetectorConstruction class
+/// \file G4TPCDetectorConstruction.hh
+/// \brief Definition of the G4TPCDetectorConstruction class
 
-#ifndef B4DetectorConstruction_h
-#define B4DetectorConstruction_h 1
+#ifndef G4TPCDetectorConstruction_h
+#define G4TPCDetectorConstruction_h 1
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
@@ -53,11 +53,11 @@ class G4UserLimits;
 /// In addition a transverse uniform magnetic field is defined 
 /// via G4GlobalMagFieldMessenger class.
 
-class B4DetectorConstruction : public G4VUserDetectorConstruction
+class G4TPCDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    B4DetectorConstruction();
-    virtual ~B4DetectorConstruction();
+    G4TPCDetectorConstruction();
+    virtual ~G4TPCDetectorConstruction();
 
   public:
     virtual G4VPhysicalVolume* Construct();
@@ -69,7 +69,7 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     const G4VPhysicalVolume* GetAbsorberPV2() const;
     const G4VPhysicalVolume* GetGapPV() const;
     const G4VPhysicalVolume* GetGapPV2() const;
- 
+
     G4double getCalorThickness() const;
     G4double getLayerThickness() const;
     G4double getLayerThickness2() const;
@@ -80,10 +80,10 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-  
+
     // data members
     //
-    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
+    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger;
                                       // magnetic field messenger
 
     const G4int m_nofLayers;
@@ -98,46 +98,46 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     G4double m_layerThickness2;
     G4double m_calorThickness;
     G4double m_calorThickness2;
-     
+
     G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
     G4VPhysicalVolume*   fAbsorberPV2;// the absorber physical volume 2
     G4VPhysicalVolume*   fGapPV;      // the gap physical volume
     G4VPhysicalVolume*   fGapPV2;     // the gap physical volume 2
-    
+
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 };
 
 // inline functions
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetAbsorberPV() const { 
+inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV() const { 
   return fAbsorberPV; 
 }
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetAbsorberPV2() const {
+inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV2() const {
   return fAbsorberPV2;
 }
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetGapPV() const  { 
+inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetGapPV() const  { 
   return fGapPV; 
 }
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetGapPV2() const  {
+inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetGapPV2() const  {
   return fGapPV2;
 }
 
-inline G4double B4DetectorConstruction::getCalorThickness() const {
+inline G4double G4TPCDetectorConstruction::getCalorThickness() const {
   return m_calorThickness;
 }
 
-inline G4double B4DetectorConstruction::getLayerThickness() const {
+inline G4double G4TPCDetectorConstruction::getLayerThickness() const {
   return m_layerThickness;
 }
 
-inline G4double B4DetectorConstruction::getLayerThickness2() const {
+inline G4double G4TPCDetectorConstruction::getLayerThickness2() const {
   return m_layerThickness2;
 }
 
-inline G4int B4DetectorConstruction::getNumberOfLayers() const {
+inline G4int G4TPCDetectorConstruction::getNumberOfLayers() const {
   return m_nofLayers;
 }
 

@@ -23,47 +23,44 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aActionInitialization.cc 68058 2013-03-13 14:47:43Z gcosmo $
-//
-/// \file B4aActionInitialization.cc
-/// \brief Implementation of the B4aActionInitialization class
+// $Id: G4TPCPrimaryGeneratorAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
+// 
+/// \file G4TPCPrimaryGeneratorAction.hh
+/// \brief Definition of the G4TPCPrimaryGeneratorAction class
 
-#include "B4aActionInitialization.hh"
-#include "B4PrimaryGeneratorAction.hh"
-#include "B4RunAction.hh"
-#include "B4aEventAction.hh"
-#include "B4aSteppingAction.hh"
-#include "B4DetectorConstruction.hh"
+#ifndef G4TPCPrimaryGeneratorAction_h
+#define G4TPCPrimaryGeneratorAction_h 1
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "G4VUserPrimaryGeneratorAction.hh"
+#include "globals.hh"
 
-B4aActionInitialization::B4aActionInitialization
-                            (B4DetectorConstruction* detConstruction)
- : G4VUserActionInitialization(),
-   fDetConstruction(detConstruction)
-{}
+class G4ParticleGun;
+class G4Event;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+/// The primary generator action class with particle gum.
+///
+/// It defines a single particle which hits the calorimeter 
+/// perpendicular to the input face. The type of the particle
+/// can be changed via the G4 build-in commands of G4ParticleGun class 
+/// (see the macros provided with this example).
 
-B4aActionInitialization::~B4aActionInitialization()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B4aActionInitialization::BuildForMaster() const
+class G4TPCPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
-  SetUserAction(new B4RunAction);
-}
+public:
+  G4TPCPrimaryGeneratorAction();    
+  virtual ~G4TPCPrimaryGeneratorAction();
+
+  virtual void GeneratePrimaries(G4Event* event);
+  
+  // set methods
+  void SetRandomFlag(G4bool value);
+
+private:
+  G4ParticleGun*  fParticleGun; // G4 particle gun
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4aActionInitialization::Build() const
-{
-  SetUserAction(new B4PrimaryGeneratorAction);
-  SetUserAction(new B4RunAction);
-  B4aEventAction* eventAction = new B4aEventAction;
-  SetUserAction(eventAction);
-  SetUserAction(new B4aSteppingAction(fDetConstruction,eventAction));
-}  
+#endif
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+

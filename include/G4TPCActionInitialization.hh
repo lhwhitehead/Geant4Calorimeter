@@ -23,15 +23,32 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4Analysis.hh 68058 2013-03-13 14:47:43Z gcosmo $
+// $Id: G4TPCActionInitialization.hh 68058 2013-03-13 14:47:43Z gcosmo $
 //
-/// \file B4Analysis.hh
-/// \brief Selection of the analysis technology
+/// \file G4TPCActionInitialization.hh
+/// \brief Definition of the G4TPCActionInitialization class
 
-#ifndef B4Analysis_h
-#define B4Analysis_h 1
+#ifndef G4TPCActionInitialization_h
+#define G4TPCActionInitialization_h 1
 
-#include "g4root.hh"
-//#include "g4xml.hh"
+#include "G4VUserActionInitialization.hh"
+
+class G4TPCDetectorConstruction;
+
+/// Action initialization class.
+///
+
+class G4TPCActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    G4TPCActionInitialization(G4TPCDetectorConstruction*);
+    virtual ~G4TPCActionInitialization();
+
+    virtual void BuildForMaster() const;
+    virtual void Build() const;
+
+  private:
+    G4TPCDetectorConstruction* fDetConstruction;
+};
 
 #endif

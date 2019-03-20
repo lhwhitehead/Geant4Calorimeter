@@ -23,14 +23,14 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aSteppingAction.cc 68058 2013-03-13 14:47:43Z gcosmo $
+// $Id: G4TPCSteppingAction.cc 68058 2013-03-13 14:47:43Z gcosmo $
 // 
-/// \file B4aSteppingAction.cc
-/// \brief Implementation of the B4aSteppingAction class
+/// \file G4TPCSteppingAction.cc
+/// \brief Implementation of the G4TPCSteppingAction class
 
-#include "B4aSteppingAction.hh"
-#include "B4aEventAction.hh"
-#include "B4DetectorConstruction.hh"
+#include "G4TPCSteppingAction.hh"
+#include "G4TPCEventAction.hh"
+#include "G4TPCDetectorConstruction.hh"
 
 #include "G4Step.hh"
 #include "G4SystemOfUnits.hh"
@@ -38,9 +38,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4aSteppingAction::B4aSteppingAction(
-                      const B4DetectorConstruction* detectorConstruction,
-                      B4aEventAction* eventAction)
+G4TPCSteppingAction::G4TPCSteppingAction(
+                      const G4TPCDetectorConstruction* detectorConstruction,
+                      G4TPCEventAction* eventAction)
   : G4UserSteppingAction(),
     fDetConstruction(detectorConstruction),
     fEventAction(eventAction)
@@ -49,13 +49,13 @@ B4aSteppingAction::B4aSteppingAction(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4aSteppingAction::~B4aSteppingAction()
+G4TPCSteppingAction::~G4TPCSteppingAction()
 { 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4aSteppingAction::UserSteppingAction(const G4Step* step)
+void G4TPCSteppingAction::UserSteppingAction(const G4Step* step)
 {
 // Collect energy and track length step by step
 
@@ -115,7 +115,7 @@ void B4aSteppingAction::UserSteppingAction(const G4Step* step)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4int B4aSteppingAction::getLayerNumber(float z, G4VPhysicalVolume* volume)
+G4int G4TPCSteppingAction::getLayerNumber(float z, G4VPhysicalVolume* volume)
 {
     const G4double calorThickness = fDetConstruction->getCalorThickness();
     const G4double layerThickness = fDetConstruction->getLayerThickness();

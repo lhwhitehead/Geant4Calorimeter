@@ -23,14 +23,14 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aEventAction.cc 75604 2013-11-04 13:17:26Z gcosmo $
+// $Id: G4TPCEventAction.cc 75604 2013-11-04 13:17:26Z gcosmo $
 // 
-/// \file B4aEventAction.cc
-/// \brief Implementation of the B4aEventAction class
+/// \file G4TPCEventAction.cc
+/// \brief Implementation of the G4TPCEventAction class
 
-#include "B4aEventAction.hh"
-#include "B4RunAction.hh"
-#include "B4Analysis.hh"
+#include "G4TPCEventAction.hh"
+#include "G4TPCRunAction.hh"
+#include "G4TPCAnalysis.hh"
 
 #include "G4RunManager.hh"
 #include "G4Event.hh"
@@ -41,7 +41,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4aEventAction::B4aEventAction()
+G4TPCEventAction::G4TPCEventAction()
  : G4UserEventAction(),
    fEnergyAbs(0.),
    fEnergyGap(0.),
@@ -52,12 +52,12 @@ B4aEventAction::B4aEventAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4aEventAction::~B4aEventAction()
+G4TPCEventAction::~G4TPCEventAction()
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
+void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
 {  
   // initialisation per event
   fEnergyAbs = 0.;
@@ -79,7 +79,7 @@ void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4aEventAction::EndOfEventAction(const G4Event* event)
+void G4TPCEventAction::EndOfEventAction(const G4Event* event)
 {
   // Accumulate statistics
   //

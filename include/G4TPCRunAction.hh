@@ -23,34 +23,48 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4aActionInitialization.hh 68058 2013-03-13 14:47:43Z gcosmo $
-//
-/// \file B4aActionInitialization.hh
-/// \brief Definition of the B4aActionInitialization class
+// $Id: G4TPCRunAction.hh 74265 2013-10-02 14:41:20Z gcosmo $
+// 
+/// \file G4TPCRunAction.hh
+/// \brief Definition of the G4TPCRunAction class
 
-#ifndef B4aActionInitialization_h
-#define B4aActionInitialization_h 1
+#ifndef G4TPCRunAction_h
+#define G4TPCRunAction_h 1
 
-#include "G4VUserActionInitialization.hh"
+#include "G4UserRunAction.hh"
+#include "globals.hh"
 
-class B4DetectorConstruction;
+class G4Run;
 
-/// Action initialization class.
+/// Run action class
+///
+/// It accumulates statistic and computes dispersion of the energy deposit 
+/// and track lengths of charged particles with use of analysis tools:
+/// H1D histograms are created in BeginOfRunAction() for the following 
+/// physics quantities:
+/// - Edep in absorber
+/// - Edep in gap
+/// - Track length in absorber
+/// - Track length in gap
+/// The same values are also saved in the ntuple.
+/// The histograms and ntuple are saved in the output file in a format
+/// accoring to a selected technology in G4TPCAnalysis.hh.
+///
+/// In EndOfRunAction(), the accumulated statistic and computed 
+/// dispersion is printed.
 ///
 
-class B4aActionInitialization : public G4VUserActionInitialization
+class G4TPCRunAction : public G4UserRunAction
 {
   public:
-    B4aActionInitialization(B4DetectorConstruction*);
-    virtual ~B4aActionInitialization();
+    G4TPCRunAction();
+    virtual ~G4TPCRunAction();
 
-    virtual void BuildForMaster() const;
-    virtual void Build() const;
-
-  private:
-    B4DetectorConstruction* fDetConstruction;
+    virtual void BeginOfRunAction(const G4Run*);
+    virtual void   EndOfRunAction(const G4Run*);
 };
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 
-    

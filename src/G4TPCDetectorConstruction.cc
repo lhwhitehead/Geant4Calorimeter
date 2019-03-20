@@ -23,12 +23,12 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4DetectorConstruction.cc 87359 2014-12-01 16:04:27Z gcosmo $
+// $Id: G4TPCDetectorConstruction.cc 87359 2014-12-01 16:04:27Z gcosmo $
 // 
-/// \file B4DetectorConstruction.cc
-/// \brief Implementation of the B4DetectorConstruction class
+/// \file G4TPCDetectorConstruction.cc
+/// \brief Implementation of the G4TPCDetectorConstruction class
 
-#include "B4DetectorConstruction.hh"
+#include "G4TPCDetectorConstruction.hh"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -56,11 +56,11 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4ThreadLocal 
-G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0; 
+G4GlobalMagFieldMessenger* G4TPCDetectorConstruction::fMagFieldMessenger = 0; 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4DetectorConstruction::B4DetectorConstruction()
+G4TPCDetectorConstruction::G4TPCDetectorConstruction()
  : G4VUserDetectorConstruction(),
    m_nofLayers(799),
    m_nofLayers2(1),
@@ -83,13 +83,13 @@ B4DetectorConstruction::B4DetectorConstruction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4DetectorConstruction::~B4DetectorConstruction()
+G4TPCDetectorConstruction::~G4TPCDetectorConstruction()
 { 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4VPhysicalVolume* B4DetectorConstruction::Construct()
+G4VPhysicalVolume* G4TPCDetectorConstruction::Construct()
 {
   // Define materials 
   DefineMaterials();
@@ -100,7 +100,7 @@ G4VPhysicalVolume* B4DetectorConstruction::Construct()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4DetectorConstruction::DefineMaterials()
+void G4TPCDetectorConstruction::DefineMaterials()
 { 
   // Lead material defined using NIST Manager
   G4NistManager* nistManager = G4NistManager::Instance();
@@ -135,7 +135,7 @@ void B4DetectorConstruction::DefineMaterials()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
+G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
 {
   // Geometry parameters
   G4double worldSizeXY = 1.2 * m_calorSizeXY;
@@ -153,7 +153,7 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
   if ( ! defaultMaterial || ! absorberMaterial || ! gapMaterial ) {
     G4ExceptionDescription msg;
     msg << "Cannot retrieve materials already defined."; 
-    G4Exception("B4DetectorConstruction::DefineVolumes()",
+    G4Exception("G4TPCDetectorConstruction::DefineVolumes()",
       "MyCode0001", FatalException, msg);
   }  
    
@@ -406,8 +406,8 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
     << " + "
     << m_gapThickness/mm << "mm of " << gapMaterial->GetName() << " ] " << G4endl
     << "------------------------------------------------------------" << G4endl;
-  
-  //                                        
+
+    //
   // Visualization attributes
   //
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
@@ -425,7 +425,7 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4DetectorConstruction::ConstructSDandField()
+void G4TPCDetectorConstruction::ConstructSDandField()
 { 
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if

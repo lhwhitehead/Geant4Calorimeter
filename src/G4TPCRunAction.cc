@@ -23,15 +23,15 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: B4RunAction.cc 87359 2014-12-01 16:04:27Z gcosmo $
+// $Id: G4TPCRunAction.cc 87359 2014-12-01 16:04:27Z gcosmo $
 //
-/// \file B4RunAction.cc
-/// \brief Implementation of the B4RunAction class
+/// \file G4TPCRunAction.cc
+/// \brief Implementation of the G4TPCRunAction class
 
 #include <sstream>
 
-#include "B4RunAction.hh"
-#include "B4Analysis.hh"
+#include "G4TPCRunAction.hh"
+#include "G4TPCAnalysis.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -40,7 +40,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4RunAction::B4RunAction()
+G4TPCRunAction::G4TPCRunAction()
  : G4UserRunAction()
 { 
   // set printing event number per each event
@@ -48,7 +48,7 @@ B4RunAction::B4RunAction()
 
   // Create analysis manager
   // The choice of analysis technology is done via selectin of a namespace
-  // in B4Analysis.hh
+  // in G4TPCAnalysis.hh
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   G4cout << "Using " << analysisManager->GetType() << G4endl;
 
@@ -72,7 +72,7 @@ B4RunAction::B4RunAction()
 
   // Creating ntuple
   //
-  analysisManager->CreateNtuple("B4", "Edep and TrackL");
+  analysisManager->CreateNtuple("G4TPC", "Edep and TrackL");
   analysisManager->CreateNtupleDColumn("Eabs");
   analysisManager->CreateNtupleDColumn("Egap");
   analysisManager->CreateNtupleDColumn("Labs");
@@ -91,14 +91,14 @@ B4RunAction::B4RunAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B4RunAction::~B4RunAction()
+G4TPCRunAction::~G4TPCRunAction()
 {
   delete G4AnalysisManager::Instance();  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
+void G4TPCRunAction::BeginOfRunAction(const G4Run* /*run*/)
 { 
   //inform the runManager to save random number seed
   //G4RunManager::GetRunManager()->SetRandomNumberStore(true);
@@ -122,13 +122,13 @@ void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
 
   // Open an output file
   //
-  //G4String fileName = "B4";
+  //G4String fileName = "G4TPC";
   analysisManager->OpenFile();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
+void G4TPCRunAction::EndOfRunAction(const G4Run* /*run*/)
 {
   // print histogram statistics
   //
