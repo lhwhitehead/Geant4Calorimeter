@@ -82,11 +82,8 @@ void G4TPCSteppingAction::UserSteppingAction(const G4Step* step)
 
   fEventAction->AddEZ(edep, z, layer);
 
-  if ( volume == fDetConstruction->GetAbsorberPV() or volume == fDetConstruction->GetAbsorberPV2() ) {
+  if ( volume == fDetConstruction->GetAbsorberPV() ) {
     fEventAction->AddAbsE(edep,layer);
-  }
-  else if ( volume == fDetConstruction->GetGapPV() or volume == fDetConstruction->GetGapPV2() ) {
-    fEventAction->AddGapE(edep,layer);
   }
 
 //  std::cout << "Z : " << z << std::endl;
@@ -94,21 +91,6 @@ void G4TPCSteppingAction::UserSteppingAction(const G4Step* step)
 
   if ( volume == fDetConstruction->GetAbsorberPV() ) {
     fEventAction->AddAbs(edep,stepLength);
-    //std::cout << "Step Length / mm     : " << stepLength/mm << std::endl;
-  }
-
-  if ( volume == fDetConstruction->GetAbsorberPV2() ) {
-    fEventAction->AddAbs2(edep,stepLength);
-    //std::cout << "Step Length / mm     : " << stepLength/mm << std::endl;
-  }
-  
-  if ( volume == fDetConstruction->GetGapPV() ) {
-    fEventAction->AddGap(edep,stepLength);
-    //std::cout << "Step Length / mm     : " << stepLength/mm << std::endl;
-  }
-
-  if ( volume == fDetConstruction->GetGapPV2() ) {
-    fEventAction->AddGap2(edep,stepLength);
     //std::cout << "Step Length / mm     : " << stepLength/mm << std::endl;
   }
 }
@@ -119,18 +101,12 @@ G4int G4TPCSteppingAction::getLayerNumber(float z, G4VPhysicalVolume* volume)
 {
     const G4double calorThickness = fDetConstruction->getCalorThickness();
     const G4double layerThickness = fDetConstruction->getLayerThickness();
-    const G4double layerThickness2 = fDetConstruction->getLayerThickness2();
-    const G4int nofLayers = fDetConstruction->getNumberOfLayers();
+//    const G4int nofLayers = fDetConstruction->getNumberOfLayers();
     G4int layer(-2);
 
-    if (volume == fDetConstruction->GetAbsorberPV() or volume == fDetConstruction->GetGapPV())
+    if (volume == fDetConstruction->GetAbsorberPV())
     {
         layer = floor((z + calorThickness/2) / layerThickness);
-    }
-
-    else if ((volume == fDetConstruction->GetAbsorberPV2() or volume == fDetConstruction->GetGapPV2()))
-    {
-        layer = floor((z - calorThickness/2) / layerThickness2) + nofLayers;
     }
 
     return layer;

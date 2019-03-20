@@ -55,94 +55,54 @@ class G4UserLimits;
 
 class G4TPCDetectorConstruction : public G4VUserDetectorConstruction
 {
-  public:
+public:
     G4TPCDetectorConstruction();
     virtual ~G4TPCDetectorConstruction();
-
-  public:
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
 
-    // get methods
-    //
     const G4VPhysicalVolume* GetAbsorberPV() const;
-    const G4VPhysicalVolume* GetAbsorberPV2() const;
-    const G4VPhysicalVolume* GetGapPV() const;
-    const G4VPhysicalVolume* GetGapPV2() const;
-
     G4double getCalorThickness() const;
     G4double getLayerThickness() const;
-    G4double getLayerThickness2() const;
     G4int getNumberOfLayers() const;
 
-  private:
-    // methods
-    //
+private:
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
 
     // data members
-    //
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger;
-                                      // magnetic field messenger
-
-    const G4int m_nofLayers;
-    const G4int m_nofLayers2;
-    const G4double m_absoThickness;
-    const G4double m_absoThickness2;
-    const G4double m_gapThickness;
-    const G4double m_gapThickness2;
-    const G4double m_calorSizeXY;
-
-    G4double m_layerThickness;
-    G4double m_layerThickness2;
-    G4double m_calorThickness;
-    G4double m_calorThickness2;
-
-    G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
-    G4VPhysicalVolume*   fAbsorberPV2;// the absorber physical volume 2
-    G4VPhysicalVolume*   fGapPV;      // the gap physical volume
-    G4VPhysicalVolume*   fGapPV2;     // the gap physical volume 2
-
-    G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
+    const G4int          m_nofLayers;         ///<
+    G4double             m_layerThickness;    ///<
+    const G4double       m_gapThickness;      ///<
+    G4double             m_calorThickness;    ///<
+    const G4double       m_calorSizeXY;       ///<
+    G4VPhysicalVolume*   fAbsorberPV;         ///< the absorber physical volume
+    G4bool               fCheckOverlaps;      ///< option to activate checking of volumes overlaps
 };
 
-// inline functions
+//------------------------------------------------------------------------------
 
-inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV() const { 
-  return fAbsorberPV; 
+inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV() const
+{
+    return fAbsorberPV;
 }
 
-inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV2() const {
-  return fAbsorberPV2;
+//------------------------------------------------------------------------------
+
+inline G4double G4TPCDetectorConstruction::getCalorThickness() const
+{
+    return m_calorThickness;
 }
 
-inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetGapPV() const  { 
-  return fGapPV; 
+//------------------------------------------------------------------------------
+//
+inline G4double G4TPCDetectorConstruction::getLayerThickness() const
+{
+    return m_layerThickness;
 }
 
-inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetGapPV2() const  {
-  return fGapPV2;
-}
-
-inline G4double G4TPCDetectorConstruction::getCalorThickness() const {
-  return m_calorThickness;
-}
-
-inline G4double G4TPCDetectorConstruction::getLayerThickness() const {
-  return m_layerThickness;
-}
-
-inline G4double G4TPCDetectorConstruction::getLayerThickness2() const {
-  return m_layerThickness2;
-}
-
-inline G4int G4TPCDetectorConstruction::getNumberOfLayers() const {
-  return m_nofLayers;
-}
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 #endif
 
