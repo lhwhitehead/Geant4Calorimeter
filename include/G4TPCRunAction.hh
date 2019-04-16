@@ -56,15 +56,13 @@ class G4Run;
 
 class G4TPCRunAction : public G4UserRunAction
 {
-  public:
+public:
     G4TPCRunAction();
     virtual ~G4TPCRunAction();
 
     virtual void BeginOfRunAction(const G4Run*);
     virtual void   EndOfRunAction(const G4Run*);
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

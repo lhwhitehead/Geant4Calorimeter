@@ -33,6 +33,8 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
+
+#include <map>
 #include <vector>
 
 /// Event action class
@@ -45,72 +47,74 @@
 
 class G4TPCEventAction : public G4UserEventAction
 {
-  public:
+public:
     G4TPCEventAction();
     virtual ~G4TPCEventAction();
 
-    virtual void  BeginOfEventAction(const G4Event* event);
-    virtual void    EndOfEventAction(const G4Event* event);
+    virtual void BeginOfEventAction(const G4Event* event);
+    virtual void EndOfEventAction(const G4Event* event);
 
-    void AddAbs(G4double de, G4double dl);
-    void AddAbs2(G4double de, G4double dl);
-    void AddGap(G4double de, G4double dl);
-    void AddGap2(G4double de, G4double dl);
-    void AddEZ(G4double de, G4double z, G4int layer);
-    void AddAbsE(G4double de, G4int layer);
-    void AddGapE(G4double de, G4int layer);
+private:
+    class CartesianVector
+    {
+    public:
+        CartesianVector(const float x, const float y, const float z);
+        float GetX() const;
+        float GetY() const;
+        float GetZ() const;
+        void SetX(const float x);
+        void SetY(const float y);
+        void SetZ(const float z);
 
-  private:
-    G4double  fEnergyAbs;
-    G4double  fEnergyGap;
-    G4double  fTrackLAbs;
-    G4double  fTrackLGap;
-    std::vector<float> m_Z;
-    std::vector<float> m_Energy;
-    std::vector<int> m_Layer;
-    std::vector<float> m_AbsEnergy;
-    std::vector<float> m_GapEnergy;
+    private:
+        float m_x;
+        float m_y;
+        float m_z;
+    };
+
+    std::map<CartesianVector, float> pointToEnergy;
 };
 
-// inline functions
+//------------------------------------------------------------------------------
 
-inline void G4TPCEventAction::AddAbs(G4double de, G4double dl) {
-  fEnergyAbs += de;
-  fTrackLAbs += dl;
+inline float G4TPCEventAction::CartesianVector::GetX() const
+{
+    return m_x;
 }
 
-inline void G4TPCEventAction::AddAbs2(G4double de, G4double dl) {
-  fEnergyAbs += de;
-  fTrackLAbs += dl;
+//------------------------------------------------------------------------------
+
+inline void G4TPCEventAction::CartesianVector::SetX(const float x)
+{
+    m_x = x;
 }
 
-inline void G4TPCEventAction::AddGap(G4double de, G4double dl) {
-  fEnergyGap += de;
-  fTrackLGap += dl;
+//------------------------------------------------------------------------------
+
+inline float G4TPCEventAction::CartesianVector::GetY() const
+{
+    return m_y;
 }
 
-inline void G4TPCEventAction::AddGap2(G4double de, G4double dl) {
-  fEnergyGap += de;
-  fTrackLGap += dl;
+//------------------------------------------------------------------------------
+
+inline void G4TPCEventAction::CartesianVector::SetY(const float y)
+{
+    m_y = y;
 }
 
-inline void G4TPCEventAction::AddEZ(G4double de, G4double z, G4int layer){
-  m_Energy.push_back(de);
-  m_Z.push_back(z);
-  m_Layer.push_back(layer);
+//------------------------------------------------------------------------------
+
+inline float G4TPCEventAction::CartesianVector::GetZ() const
+{
+    return m_z;
 }
 
-inline void G4TPCEventAction::AddAbsE(G4double de, G4int layer){
-  if (layer >= 0 and layer < 30)
-    m_AbsEnergy.at(layer) += de;
-}
+//------------------------------------------------------------------------------
 
-inline void G4TPCEventAction::AddGapE(G4double de, G4int layer){
-  if (layer >= 0 and layer < 30)
-    m_GapEnergy.at(layer) += de;
+inline void G4TPCEventAction::CartesianVector::SetZ(const float z)
+{
+    m_z = z;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-

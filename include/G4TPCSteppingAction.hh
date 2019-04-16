@@ -47,19 +47,15 @@ class G4VPhysicalVolume;
 class G4TPCSteppingAction : public G4UserSteppingAction
 {
 public:
-  G4TPCSteppingAction(const G4TPCDetectorConstruction* detectorConstruction,
-                    G4TPCEventAction* eventAction);
-  virtual ~G4TPCSteppingAction();
+    G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, G4TPCEventAction *pG4TPCEventAction);
 
-  virtual void UserSteppingAction(const G4Step* step);
+    virtual ~G4TPCSteppingAction();
 
-  G4int getLayerNumber(float z, G4VPhysicalVolume* volume);
+    virtual void UserSteppingAction(const G4Step *pG4Step);
 
 private:
-  const G4TPCDetectorConstruction* fDetConstruction;
-  G4TPCEventAction*  fEventAction;
+    const G4TPCDetectorConstruction *m_pG4TPCDetectorConstruction; ///< Detector construction class
+    G4TPCEventAction                *m_pG4TPCEventAction;          ///< Event action class
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

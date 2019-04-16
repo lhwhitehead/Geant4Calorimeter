@@ -53,22 +53,28 @@
 
 #include "G4UserLimits.hh"
 
+#include "G4Step.hh"
+
 //------------------------------------------------------------------------------
 
-G4ThreadLocal
-G4GlobalMagFieldMessenger* G4TPCDetectorConstruction::fMagFieldMessenger = 0;
+G4ThreadLocal G4GlobalMagFieldMessenger* G4TPCDetectorConstruction::fMagFieldMessenger(nullptr);
 
 //------------------------------------------------------------------------------
 
 G4TPCDetectorConstruction::G4TPCDetectorConstruction() : G4VUserDetectorConstruction(),
-    m_nofLayers(100),
-    m_layerThickness(2.5*mm),
-    m_gapThickness(2.5*mm),
-    m_calorThickness(m_nofLayers * m_layerThickness),
-    m_calorSizeXY(100.*cm),
-    fAbsorberPV(0),
+    m_xCenter(1*m),
+    m_yCenter(1*m),
+    m_zCenter(2*m),
+    m_xWidth(3*m),
+    m_yWidth(3*m),
+    m_zWidth(3*m),
+    m_nLayers(10),
+    m_pG4LogicalVolumeLAr(nullptr),
     fCheckOverlaps(true)
 {
+    m_xLow = m_xCenter - 0.5f * m_xWidth;
+    m_yLow = m_yCenter - 0.5f * m_yWidth;
+    m_zLow = m_zCenter - 0.5f * m_zWidth;
 }
 
 //------------------------------------------------------------------------------
@@ -113,11 +119,8 @@ void G4TPCDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
 {
-    // Geometry parameters
-    G4double worldSizeXY = 12;
-    G4double worldSizeZ  = 12;
-
-    G4double caloOffset = 0;
+    const G4double worldScale(1.2);
+    G4ThreeVector worldCenter(m_xCenter, m_yCenter, m_zCenter);
 
     // Get materials
     G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -131,24 +134,25 @@ G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
     }
 
     // World
-    G4VSolid* worldS = new G4Box("World", worldSizeXY/2, worldSizeXY/2, worldSizeZ/2);
+    G4VSolid* worldS = new G4Box("World", m_xWidth * worldScale, m_yWidth * worldScale, m_zWidth * worldScale);
     G4LogicalVolume* worldLV = new G4LogicalVolume(worldS, defaultMaterial, "World");
-    G4VPhysicalVolume* worldPV = new G4PVPlacement(0, G4ThreeVector(), worldLV, "World", 0, false, 0, fCheckOverlaps);
+    G4VPhysicalVolume* worldPV = new G4PVPlacement(0, worldCenter, worldLV, "World", 0, false, 0, fCheckOverlaps);
 
     // Calorimeter
-    G4VSolid* calorimeterS = new G4Box("Calorimeter", m_calorSizeXY/2, m_calorSizeXY/2, m_calorThickness/2);
+    G4VSolid* calorimeterS = new G4Box("Calorimeter", m_xWidth/2, m_yWidth/2, m_zWidth/2);
     G4LogicalVolume* calorLV = new G4LogicalVolume(calorimeterS, defaultMaterial, "Calorimeter");
-    new G4PVPlacement(0, G4ThreeVector(), calorLV, "Calorimeter", worldLV, false, 0, fCheckOverlaps);
+    new G4PVPlacement(0, worldCenter, calorLV, "Calorimeter", worldLV, false, 0, fCheckOverlaps);
 
     // Layers
-    G4VSolid* layerS = new G4Box("Layer", m_calorSizeXY/2, m_calorSizeXY/2, m_layerThickness/2);
+    const G4double layerThickness(m_zWidth/m_nLayers);
+    G4VSolid* layerS = new G4Box("Layer", m_xWidth/2, m_yWidth/2, layerThickness/2);
     G4LogicalVolume* layerLV = new G4LogicalVolume(layerS, defaultMaterial, "Layer");
-    new G4PVReplica("Layer", layerLV, calorLV, kZAxis, m_nofLayers, m_layerThickness);
+    new G4PVReplica("Layer", layerLV, calorLV, kZAxis, m_nLayers, layerThickness);
 
     // Absorber
-    G4VSolid* absorberS = new G4Box("Abso", m_calorSizeXY/2, m_calorSizeXY/2, m_layerThickness/2);
+    G4VSolid* absorberS = new G4Box("Abso", m_xWidth/2, m_yWidth/2, layerThickness/2);
     G4LogicalVolume* absorberLV = new G4LogicalVolume(absorberS, pG4Material_LAr, "Abso");
-    fAbsorberPV = new G4PVPlacement(0, G4ThreeVector(0., 0., 0), absorberLV, "Abso", layerLV, false, 0, fCheckOverlaps);
+    m_pG4LogicalVolumeLAr = new G4PVPlacement(0, worldCenter, absorberLV, "Abso", layerLV, false, 0, fCheckOverlaps);
 
     // Example of User Limits
     //
@@ -175,8 +179,8 @@ G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
     // print parameters
     G4cout << G4endl
         << "------------------------------------------------------------" << G4endl
-        << "---> The calorimeter is " << m_nofLayers << " layers of: [ "
-        << m_layerThickness/mm << "mm of " << pG4Material_LAr->GetName() 
+        << "---> The calorimeter is " << m_nLayers << " layers of: [ "
+        << layerThickness/mm << "mm of " << pG4Material_LAr->GetName()
         << "------------------------------------------------------------" << G4endl;
 
     // Visualization attributes
@@ -203,6 +207,18 @@ void G4TPCDetectorConstruction::ConstructSDandField()
 
     // Register the field messenger for deleting
     G4AutoDelete::Register(fMagFieldMessenger);
+}
+
+//------------------------------------------------------------------------------
+
+G4int G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
+{
+    // ATTN: Cell index is zero at lowest x,y,z coordinate, then builds up along x then y then z
+    int xIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().x() - m_xLow) / (m_xWidth);
+    int yIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().y() - m_yLow) / (m_yWidth);
+    int zIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().z() - m_zLow) / (m_zWidth);
+
+    return xIndex + yIndex * m_nLayers + zIndex * m_nLayers;
 }
 
 //------------------------------------------------------------------------------

@@ -35,20 +35,21 @@
 
 class G4TPCDetectorConstruction;
 
-/// Action initialization class.
-///
+/**
+ *  @brief  Action initialization class.
+ */
 
 class G4TPCActionInitialization : public G4VUserActionInitialization
 {
-  public:
+public:
     G4TPCActionInitialization(G4TPCDetectorConstruction*);
     virtual ~G4TPCActionInitialization();
 
     virtual void BuildForMaster() const;
     virtual void Build() const;
 
-  private:
-    G4TPCDetectorConstruction* fDetConstruction;
+private:
+    G4TPCDetectorConstruction *m_pG4TPCDetectorConstruction; ///< Detector construction class
 };
 
 #endif

@@ -115,26 +115,26 @@ int main(int argc,char** argv)
 
     // Construct the default run manager
 #ifdef G4MULTITHREADED
-    G4MTRunManager * runManager = new G4MTRunManager;
+    G4MTRunManager * pG4MTRunManager = new G4MTRunManager;
     if ( nThreads > 0 )
     {
-        runManager->SetNumberOfThreads(nThreads);
+        pG4MTRunManager->SetNumberOfThreads(nThreads);
     }
 #else
-    G4RunManager * runManager = new G4RunManager;
+    G4RunManager * pG4MTRunManager = new G4RunManager;
 #endif
 
     // Set mandatory initialization classes
     G4TPCDetectorConstruction* pG4TPCDetectorConstruction = new G4TPCDetectorConstruction();
-    runManager->SetUserInitialization(pG4TPCDetectorConstruction);
+    pG4MTRunManager->SetUserInitialization(pG4TPCDetectorConstruction);
 
     //G4VModularPhysicsList* pG4VModularPhysicsList = new FTFP_BERT; <- Original
     G4VModularPhysicsList* pG4VModularPhysicsList = new QGSP_BERT;
     pG4VModularPhysicsList->RegisterPhysics(new G4StepLimiterPhysics()); // Has to be added to limit step size
-    runManager->SetUserInitialization(pG4VModularPhysicsList);
+    pG4MTRunManager->SetUserInitialization(pG4VModularPhysicsList);
 
     G4TPCActionInitialization* pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction);
-    runManager->SetUserInitialization(pG4TPCActionInitialization);
+    pG4MTRunManager->SetUserInitialization(pG4TPCActionInitialization);
 
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
@@ -172,7 +172,7 @@ int main(int argc,char** argv)
     // in the main() program !
 
     delete pG4VisManager;
-    delete runManager;
+    delete pG4MTRunManager;
 }
 
 //------------------------------------------------------------------------------

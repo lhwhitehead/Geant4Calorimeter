@@ -38,6 +38,7 @@
 class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 class G4UserLimits;
+class G4Step;
 
 /// Detector construction class to define materials and geometry.
 /// The calorimeter is a box made of a given number of layers. A layer consists
@@ -58,48 +59,45 @@ class G4TPCDetectorConstruction : public G4VUserDetectorConstruction
 public:
     G4TPCDetectorConstruction();
     virtual ~G4TPCDetectorConstruction();
-    virtual G4VPhysicalVolume* Construct();
+    virtual G4VPhysicalVolume *Construct();
     virtual void ConstructSDandField();
 
-    const G4VPhysicalVolume* GetAbsorberPV() const;
-    G4double getCalorThickness() const;
-    G4double getLayerThickness() const;
-    G4int getNumberOfLayers() const;
+    const G4VPhysicalVolume *GetLArPV() const;
+
+    /**
+     *  @brief  Get the index of the cell for the given position
+     *
+     *  @return the cell index
+     */
+    G4int GetCell(const G4Step *pG4Step) const;
 
 private:
     void DefineMaterials();
-    G4VPhysicalVolume* DefineVolumes();
+    G4VPhysicalVolume *DefineVolumes();
 
     // data members
-    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger;
-    const G4int          m_nofLayers;         ///<
-    G4double             m_layerThickness;    ///<
-    const G4double       m_gapThickness;      ///<
-    G4double             m_calorThickness;    ///<
-    const G4double       m_calorSizeXY;       ///<
-    G4VPhysicalVolume*   fAbsorberPV;         ///< the absorber physical volume
-    G4bool               fCheckOverlaps;      ///< option to activate checking of volumes overlaps
+    static G4ThreadLocal G4GlobalMagFieldMessenger *fMagFieldMessenger;
+
+    G4double             m_xCenter;              ///<
+    G4double             m_yCenter;              ///<
+    G4double             m_zCenter;              ///<
+    G4double             m_xWidth;               ///<
+    G4double             m_yWidth;               ///<
+    G4double             m_zWidth;               ///<
+    G4double             m_xLow;
+    G4double             m_yLow;
+    G4double             m_zLow;
+    G4int                m_nLayers;
+
+    G4VPhysicalVolume*   m_pG4LogicalVolumeLAr;  ///< the absorber physical volume
+    G4bool               fCheckOverlaps;         ///< option to activate checking of volumes overlaps
 };
 
 //------------------------------------------------------------------------------
 
-inline const G4VPhysicalVolume* G4TPCDetectorConstruction::GetAbsorberPV() const
+inline const G4VPhysicalVolume *G4TPCDetectorConstruction::GetLArPV() const
 {
-    return fAbsorberPV;
-}
-
-//------------------------------------------------------------------------------
-
-inline G4double G4TPCDetectorConstruction::getCalorThickness() const
-{
-    return m_calorThickness;
-}
-
-//------------------------------------------------------------------------------
-//
-inline G4double G4TPCDetectorConstruction::getLayerThickness() const
-{
-    return m_layerThickness;
+    return m_pG4LogicalVolumeLAr;
 }
 
 //------------------------------------------------------------------------------

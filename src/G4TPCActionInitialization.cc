@@ -35,35 +35,34 @@
 #include "G4TPCSteppingAction.hh"
 #include "G4TPCDetectorConstruction.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
-G4TPCActionInitialization::G4TPCActionInitialization
-                            (G4TPCDetectorConstruction* detConstruction)
- : G4VUserActionInitialization(),
-   fDetConstruction(detConstruction)
-{}
+G4TPCActionInitialization::G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction) : G4VUserActionInitialization(),
+    m_pG4TPCDetectorConstruction(pG4TPCDetectorConstruction)
+{
+}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 G4TPCActionInitialization::~G4TPCActionInitialization()
-{}
+{
+}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 void G4TPCActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new G4TPCRunAction);
+    SetUserAction(new G4TPCRunAction);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 void G4TPCActionInitialization::Build() const
 {
-  SetUserAction(new G4TPCPrimaryGeneratorAction);
-  SetUserAction(new G4TPCRunAction);
-  G4TPCEventAction* eventAction = new G4TPCEventAction;
-  SetUserAction(eventAction);
-  SetUserAction(new G4TPCSteppingAction(fDetConstruction,eventAction));
-}  
+    SetUserAction(new G4TPCPrimaryGeneratorAction());
+    SetUserAction(new G4TPCRunAction());
+    G4TPCEventAction* pG4TPCEventAction = new G4TPCEventAction();
+    SetUserAction(pG4TPCEventAction);
+    SetUserAction(new G4TPCSteppingAction(m_pG4TPCDetectorConstruction, pG4TPCEventAction));
+}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

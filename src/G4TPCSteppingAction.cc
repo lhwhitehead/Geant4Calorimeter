@@ -36,80 +36,45 @@
 #include "G4SystemOfUnits.hh"
 #include "G4RunManager.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
-G4TPCSteppingAction::G4TPCSteppingAction(
-                      const G4TPCDetectorConstruction* detectorConstruction,
-                      G4TPCEventAction* eventAction)
-  : G4UserSteppingAction(),
-    fDetConstruction(detectorConstruction),
-    fEventAction(eventAction)
+G4TPCSteppingAction::G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, G4TPCEventAction *pG4TPCEventAction) :
+    G4UserSteppingAction(),
+    m_pG4TPCDetectorConstruction(pG4TPCDetectorConstruction),
+    m_pG4TPCEventAction(pG4TPCEventAction)
 {
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 G4TPCSteppingAction::~G4TPCSteppingAction()
-{ 
+{
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
-void G4TPCSteppingAction::UserSteppingAction(const G4Step* step)
+void G4TPCSteppingAction::UserSteppingAction(const G4Step *pG4Step)
 {
-// Collect energy and track length step by step
+    // Collect energy and track length step by step
+    // get pG4VPhysicalVolume of the current step
+    //G4VPhysicalVolume* pG4VPhysicalVolume = pG4Step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
 
-  // get volume of the current step
-  G4VPhysicalVolume* volume 
-    = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
-  
-  // energy deposit
-  G4double edep = step->GetTotalEnergyDeposit();
-  
-  // step length
-  G4double stepLength = 0.;
-  if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
-    stepLength = step->GetStepLength();
-  }
+    // energy deposit
+    //G4double energyDeposition = pG4Step->GetTotalEnergyDeposit();
 
-//  std::cout << "Step Length / mm     : " << stepLength << std::endl;
+    // step length
+    //G4double stepLength = 0.;
+    //if (pG4Step->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
+    //{
+    //    stepLength = pG4Step->GetStepLength();
+    //}
 
-//  std::cout << "Step Z position : " << step->GetPreStepPoint()->GetPosition().z() << std::endl;
-//  std::cout << "Step Energy     : " << edep << std::endl;
-
-  G4double z = step->GetPreStepPoint()->GetPosition().z();
-  G4int layer = this->getLayerNumber(z,volume);
-
-  fEventAction->AddEZ(edep, z, layer);
-
-  if ( volume == fDetConstruction->GetAbsorberPV() ) {
-    fEventAction->AddAbsE(edep,layer);
-  }
-
-//  std::cout << "Z : " << z << std::endl;
-//  std::cout << "Layer number : " << this->getLayerNumber(z,volume) << std::endl;
-
-  if ( volume == fDetConstruction->GetAbsorberPV() ) {
-    fEventAction->AddAbs(edep,stepLength);
-    //std::cout << "Step Length / mm     : " << stepLength/mm << std::endl;
-  }
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4int G4TPCSteppingAction::getLayerNumber(float z, G4VPhysicalVolume* volume)
-{
-    const G4double calorThickness = fDetConstruction->getCalorThickness();
-    const G4double layerThickness = fDetConstruction->getLayerThickness();
-//    const G4int nofLayers = fDetConstruction->getNumberOfLayers();
-    G4int layer(-2);
-
-    if (volume == fDetConstruction->GetAbsorberPV())
+    const G4int cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
+    std::cout << cell << std::endl;
+/*
+    if (pG4VPhysicalVolume == m_pG4TPCDetectorConstruction->GetAbsorberPV())
     {
-        layer = floor((z + calorThickness/2) / layerThickness);
+        m_pG4TPCEventAction->AddAbsE(energyDeposition,layer);
     }
-
-    return layer;
+*/
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

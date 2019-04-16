@@ -39,100 +39,68 @@
 #include "Randomize.hh"
 #include <iomanip>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
-G4TPCEventAction::G4TPCEventAction()
- : G4UserEventAction(),
-   fEnergyAbs(0.),
-   fEnergyGap(0.),
-   fTrackLAbs(0.),
-   fTrackLGap(0.)
+G4TPCEventAction::G4TPCEventAction() : G4UserEventAction()
 {
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
 G4TPCEventAction::~G4TPCEventAction()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
-{  
-  // initialisation per event
-  fEnergyAbs = 0.;
-  fEnergyGap = 0.;
-  fTrackLAbs = 0.;
-  fTrackLGap = 0.;
-  m_Z.clear();
-  m_Energy.clear();
-  m_Layer.clear();
-  m_AbsEnergy.clear();
-  m_GapEnergy.clear();
-
-  for (unsigned int i = 0; i < 30; i++)
-  {
-    m_AbsEnergy.push_back(0);
-    m_GapEnergy.push_back(0);
-  }
+{
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
 
-void G4TPCEventAction::EndOfEventAction(const G4Event* event)
+void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
 {
-  // Accumulate statistics
-  //
+    pointToEnergy.clear();
+}
 
-  // get analysis manager
-  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+//------------------------------------------------------------------------------
 
-  // fill histograms
-  analysisManager->FillH1(1, fEnergyAbs);
-  analysisManager->FillH1(2, fEnergyGap);
-  analysisManager->FillH1(3, fTrackLAbs);
-  analysisManager->FillH1(4, fTrackLGap);
+void G4TPCEventAction::EndOfEventAction(const G4Event* /*event*/)
+{
+//    pointToEnergy convert to output root file
+/*
+    // get analysis manager
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-  for (unsigned int i = 0; i < m_Z.size(); i++)
-  {
-    analysisManager->FillH1(5, m_Z.at(i));
-    analysisManager->FillH1(6, m_Layer.at(i));
-    analysisManager->FillH1(7, m_Energy.at(i));
-  }
-  
-  // fill ntuple
-  analysisManager->FillNtupleDColumn(0, fEnergyAbs);
-  analysisManager->FillNtupleDColumn(1, fEnergyGap);
-  analysisManager->FillNtupleDColumn(2, fTrackLAbs);
-  analysisManager->FillNtupleDColumn(3, fTrackLGap);
+    // fill histograms
+    analysisManager->FillH1(1, fEnergyAbs);
+    analysisManager->FillH1(2, fEnergyGap);
+    analysisManager->FillH1(3, fTrackLAbs);
+    analysisManager->FillH1(4, fTrackLGap);
 
-  for (unsigned int i = 0; i < 30; i++)
-  {
-    analysisManager->FillNtupleDColumn((2*i)+4, m_AbsEnergy.at(i));
-    analysisManager->FillNtupleDColumn((2*i)+5, m_GapEnergy.at(i));
-  }
+    for (unsigned int i = 0; i < m_Z.size(); i++)
+    {
+        analysisManager->FillH1(5, m_Z.at(i));
+        analysisManager->FillH1(6, m_Layer.at(i));
+        analysisManager->FillH1(7, m_Energy.at(i));
+    }
 
-  analysisManager->AddNtupleRow();  
+    // fill ntuple
+    analysisManager->FillNtupleDColumn(0, fEnergyAbs);
+    analysisManager->FillNtupleDColumn(1, fEnergyGap);
+    analysisManager->FillNtupleDColumn(2, fTrackLAbs);
+    analysisManager->FillNtupleDColumn(3, fTrackLGap);
 
-  // Print per event (modulo n)
-  //
-  G4int eventID = event->GetEventID();
-  G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-  if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
-    G4cout << "---> End of event: " << eventID << G4endl;     
+    for (unsigned int i = 0; i < 30; i++)
+    {
+        analysisManager->FillNtupleDColumn((2*i)+4, m_AbsEnergy.at(i));
+        analysisManager->FillNtupleDColumn((2*i)+5, m_GapEnergy.at(i));
+    }
 
-    G4cout
-       << "   Absorber: total energy: " << std::setw(7)
-                                        << G4BestUnit(fEnergyAbs,"Energy")
-       << "       total track length: " << std::setw(7)
-                                        << G4BestUnit(fTrackLAbs,"Length")
-       << G4endl
-       << "        Gap: total energy: " << std::setw(7)
-                                        << G4BestUnit(fEnergyGap,"Energy")
-       << "       total track length: " << std::setw(7)
-                                        << G4BestUnit(fTrackLGap,"Length")
-       << G4endl;
-  }
-}  
+    analysisManager->AddNtupleRow();
+*/
+}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//------------------------------------------------------------------------------
+
+G4TPCEventAction::CartesianVector::CartesianVector(const float x, const float y, const float z) :
+    m_x(x),
+    m_y(y),
+    m_z(z)
+{
+}
