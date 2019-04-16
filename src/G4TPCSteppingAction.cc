@@ -56,25 +56,14 @@ G4TPCSteppingAction::~G4TPCSteppingAction()
 void G4TPCSteppingAction::UserSteppingAction(const G4Step *pG4Step)
 {
     // Collect energy and track length step by step
-    // get pG4VPhysicalVolume of the current step
-    //G4VPhysicalVolume* pG4VPhysicalVolume = pG4Step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+    G4VPhysicalVolume* pG4VPhysicalVolume = pG4Step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
 
-    // energy deposit
-    //G4double energyDeposition = pG4Step->GetTotalEnergyDeposit();
+    if (pG4Step->GetTrack()->GetDefinition()->GetPDGCharge() == 0.)
+        return;
 
-    // step length
-    //G4double stepLength = 0.;
-    //if (pG4Step->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
-    //{
-    //    stepLength = pG4Step->GetStepLength();
-    //}
+    G4TPCEventAction::Cell cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
+    cell.AddEnergy(pG4Step->GetTotalEnergyDeposit());
 
-    const G4int cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
-    std::cout << cell << std::endl;
-/*
-    if (pG4VPhysicalVolume == m_pG4TPCDetectorConstruction->GetAbsorberPV())
-    {
-        m_pG4TPCEventAction->AddAbsE(energyDeposition,layer);
-    }
-*/
+    if (pG4VPhysicalVolume == m_pG4TPCDetectorConstruction->GetLArPV())
+        m_pG4TPCEventAction->AddEnergyDeposition(cell);
 }

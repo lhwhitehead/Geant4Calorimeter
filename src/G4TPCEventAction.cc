@@ -55,52 +55,53 @@ G4TPCEventAction::~G4TPCEventAction()
 
 void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
 {
-    pointToEnergy.clear();
 }
 
 //------------------------------------------------------------------------------
 
 void G4TPCEventAction::EndOfEventAction(const G4Event* /*event*/)
 {
-//    pointToEnergy convert to output root file
-/*
-    // get analysis manager
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
+    pG4AnalysisManager->CreateNtupleDColumn("CellId");
+    pG4AnalysisManager->CreateNtupleDColumn("CellX");
+    pG4AnalysisManager->CreateNtupleDColumn("CellY");
+    pG4AnalysisManager->CreateNtupleDColumn("CellZ");
+    pG4AnalysisManager->CreateNtupleDColumn("Energy");
 
-    // fill histograms
-    analysisManager->FillH1(1, fEnergyAbs);
-    analysisManager->FillH1(2, fEnergyGap);
-    analysisManager->FillH1(3, fTrackLAbs);
-    analysisManager->FillH1(4, fTrackLGap);
-
-    for (unsigned int i = 0; i < m_Z.size(); i++)
+    for (const auto iter : m_idCellMap)
     {
-        analysisManager->FillH1(5, m_Z.at(i));
-        analysisManager->FillH1(6, m_Layer.at(i));
-        analysisManager->FillH1(7, m_Energy.at(i));
+        pG4AnalysisManager->FillNtupleDColumn(0, iter.second.GetIdx());
+        pG4AnalysisManager->FillNtupleDColumn(1, iter.second.GetX());
+        pG4AnalysisManager->FillNtupleDColumn(2, iter.second.GetY());
+        pG4AnalysisManager->FillNtupleDColumn(3, iter.second.GetZ());
+        pG4AnalysisManager->FillNtupleDColumn(4, iter.second.GetEnergy());
+        pG4AnalysisManager->AddNtupleRow();
     }
 
-    // fill ntuple
-    analysisManager->FillNtupleDColumn(0, fEnergyAbs);
-    analysisManager->FillNtupleDColumn(1, fEnergyGap);
-    analysisManager->FillNtupleDColumn(2, fTrackLAbs);
-    analysisManager->FillNtupleDColumn(3, fTrackLGap);
-
-    for (unsigned int i = 0; i < 30; i++)
-    {
-        analysisManager->FillNtupleDColumn((2*i)+4, m_AbsEnergy.at(i));
-        analysisManager->FillNtupleDColumn((2*i)+5, m_GapEnergy.at(i));
-    }
-
-    analysisManager->AddNtupleRow();
-*/
+    m_idCellMap.clear();
 }
 
 //------------------------------------------------------------------------------
 
-G4TPCEventAction::CartesianVector::CartesianVector(const float x, const float y, const float z) :
+void G4TPCEventAction::AddEnergyDeposition(const Cell &cell)
+{
+    if (m_idCellMap.find(cell.GetIdx()) == m_idCellMap.end())
+    {
+        m_idCellMap.insert(IntCellMap::value_type(cell.GetIdx(), cell));
+    }
+    else
+    {
+        m_idCellMap.at(cell.GetIdx()).AddEnergy(cell.GetEnergy());
+    }
+}
+
+//------------------------------------------------------------------------------
+
+G4TPCEventAction::Cell::Cell(const float x, const float y, const float z, const int idx) :
+    m_idx(idx),
     m_x(x),
     m_y(y),
-    m_z(z)
+    m_z(z),
+    m_energy(0.f)
 {
 }

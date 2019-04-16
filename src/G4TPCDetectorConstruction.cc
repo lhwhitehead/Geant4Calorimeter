@@ -62,13 +62,13 @@ G4ThreadLocal G4GlobalMagFieldMessenger* G4TPCDetectorConstruction::fMagFieldMes
 //------------------------------------------------------------------------------
 
 G4TPCDetectorConstruction::G4TPCDetectorConstruction() : G4VUserDetectorConstruction(),
-    m_xCenter(1*m),
-    m_yCenter(1*m),
-    m_zCenter(2*m),
-    m_xWidth(3*m),
-    m_yWidth(3*m),
-    m_zWidth(3*m),
-    m_nLayers(10),
+    m_xCenter(0*m),
+    m_yCenter(0*m),
+    m_zCenter(0*m),
+    m_xWidth(1*m),
+    m_yWidth(1*m),
+    m_zWidth(1*m),
+    m_nLayers(1000),
     m_pG4LogicalVolumeLAr(nullptr),
     fCheckOverlaps(true)
 {
@@ -211,14 +211,19 @@ void G4TPCDetectorConstruction::ConstructSDandField()
 
 //------------------------------------------------------------------------------
 
-G4int G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
+G4TPCEventAction::Cell G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
 {
     // ATTN: Cell index is zero at lowest x,y,z coordinate, then builds up along x then y then z
-    int xIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().x() - m_xLow) / (m_xWidth);
-    int yIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().y() - m_yLow) / (m_yWidth);
-    int zIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().z() - m_zLow) / (m_zWidth);
+    const int xIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().x() - m_xLow) / (m_xWidth);
+    const int yIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().y() - m_yLow) / (m_yWidth);
+    const int zIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().z() - m_zLow) / (m_zWidth);
 
-    return xIndex + yIndex * m_nLayers + zIndex * m_nLayers;
+    const int index(xIndex + yIndex * m_nLayers + zIndex * m_nLayers * m_nLayers);
+    const float xCell((0.5f + xIndex) * m_xWidth / m_nLayers);
+    const float yCell((0.5f + yIndex) * m_yWidth / m_nLayers);
+    const float zCell((0.5f + zIndex) * m_zWidth / m_nLayers);
+
+    return G4TPCEventAction::Cell(xCell, yCell, zCell, index);
 }
 
 //------------------------------------------------------------------------------

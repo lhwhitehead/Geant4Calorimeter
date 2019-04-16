@@ -44,20 +44,20 @@ G4TPCRunAction::G4TPCRunAction() : G4UserRunAction()
 {
     G4RunManager::GetRunManager()->SetPrintProgress(1);
 
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-    G4cout << "Using " << analysisManager->GetType() << G4endl;
+    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
 
     // Create directories
-    analysisManager->SetVerboseLevel(1);
-    analysisManager->SetFirstHistoId(1);
-
-    // Book histograms, ntuple
-    //analysisManager->CreateH1("7","EDep", 1000, 0., 100);
+    pG4AnalysisManager->SetVerboseLevel(1);
+    pG4AnalysisManager->SetFirstHistoId(1);
 
     // Creating ntuple
-    analysisManager->CreateNtuple("G4TPC", "Edep and TrackL");
-    analysisManager->CreateNtupleDColumn("Eabs");
-    analysisManager->FinishNtuple();
+    pG4AnalysisManager->CreateNtuple("G4TPC", "EnergyDeposition");
+    pG4AnalysisManager->CreateNtupleDColumn("CellId");
+    pG4AnalysisManager->CreateNtupleDColumn("CellX");
+    pG4AnalysisManager->CreateNtupleDColumn("CellY");
+    pG4AnalysisManager->CreateNtupleDColumn("CellZ");
+    pG4AnalysisManager->CreateNtupleDColumn("Energy");
+    pG4AnalysisManager->FinishNtuple();
 }
 
 //------------------------------------------------------------------------------
@@ -89,23 +89,15 @@ void G4TPCRunAction::BeginOfRunAction(const G4Run* /*run*/)
     G4Random::showEngineStatus();
 
     // Get analysis manager
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-
-    // Open an output file
-    //
-    //G4String fileName = "G4TPC";
-    analysisManager->OpenFile();
+    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
+    pG4AnalysisManager->OpenFile();
 }
 
 //------------------------------------------------------------------------------
 
 void G4TPCRunAction::EndOfRunAction(const G4Run* /*run*/)
 {
-    // print histogram statistics
-    //
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-
-    // save histograms & ntuple
-    analysisManager->Write();
-    analysisManager->CloseFile();
+    G4AnalysisManager* pG4AnalysisManager = G4AnalysisManager::Instance();
+    pG4AnalysisManager->Write();
+    pG4AnalysisManager->CloseFile();
 }

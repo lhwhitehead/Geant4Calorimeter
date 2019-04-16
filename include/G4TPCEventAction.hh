@@ -54,67 +54,81 @@ public:
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-private:
-    class CartesianVector
+    /**
+     *  @brief  Cell class
+     */
+    class Cell
     {
     public:
-        CartesianVector(const float x, const float y, const float z);
+        Cell(const float x, const float y, const float z, const int idx);
+
+        int GetIdx() const;
         float GetX() const;
         float GetY() const;
         float GetZ() const;
-        void SetX(const float x);
-        void SetY(const float y);
-        void SetZ(const float z);
+        float GetEnergy() const;
+
+        void AddEnergy(const float energy);
 
     private:
-        float m_x;
-        float m_y;
-        float m_z;
+        int   m_idx;    ///< Index
+        float m_x;      ///< X position
+        float m_y;      ///< Y position
+        float m_z;      ///< Z position
+        float m_energy; ///< Enegry
     };
 
-    std::map<CartesianVector, float> pointToEnergy;
+    /**
+     *  @brief  Add the energy deposition to a cell
+     */
+    void AddEnergyDeposition(const Cell &cell);
+
+private:
+    typedef std::map<int, Cell> IntCellMap;
+
+    IntCellMap m_idCellMap; ///< Map of index of cell to cell
 };
 
 //------------------------------------------------------------------------------
 
-inline float G4TPCEventAction::CartesianVector::GetX() const
+inline int G4TPCEventAction::Cell::GetIdx() const
+{
+    return m_idx;
+}
+
+//------------------------------------------------------------------------------
+
+inline float G4TPCEventAction::Cell::GetX() const
 {
     return m_x;
 }
 
 //------------------------------------------------------------------------------
 
-inline void G4TPCEventAction::CartesianVector::SetX(const float x)
-{
-    m_x = x;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::CartesianVector::GetY() const
+inline float G4TPCEventAction::Cell::GetY() const
 {
     return m_y;
 }
 
 //------------------------------------------------------------------------------
 
-inline void G4TPCEventAction::CartesianVector::SetY(const float y)
-{
-    m_y = y;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::CartesianVector::GetZ() const
+inline float G4TPCEventAction::Cell::GetZ() const
 {
     return m_z;
 }
 
 //------------------------------------------------------------------------------
 
-inline void G4TPCEventAction::CartesianVector::SetZ(const float z)
+inline float G4TPCEventAction::Cell::GetEnergy() const
 {
-    m_z = z;
+    return m_energy;
+}
+
+//------------------------------------------------------------------------------
+
+inline void G4TPCEventAction::Cell::AddEnergy(const float energy)
+{
+    m_energy += energy;
 }
 
 #endif

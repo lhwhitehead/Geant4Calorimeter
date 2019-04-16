@@ -32,6 +32,8 @@
 #define G4TPCDetectorConstruction_h 1
 
 #include "G4VUserDetectorConstruction.hh"
+#include "G4TPCEventAction.hh"
+
 #include "globals.hh"
 #include <math.h>
 
@@ -69,7 +71,7 @@ public:
      *
      *  @return the cell index
      */
-    G4int GetCell(const G4Step *pG4Step) const;
+    G4TPCEventAction::Cell GetCell(const G4Step *pG4Step) const;
 
 private:
     void DefineMaterials();
@@ -99,8 +101,6 @@ inline const G4VPhysicalVolume *G4TPCDetectorConstruction::GetLArPV() const
 {
     return m_pG4LogicalVolumeLAr;
 }
-
-//------------------------------------------------------------------------------
 
 #endif
 
