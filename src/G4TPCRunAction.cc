@@ -52,11 +52,6 @@ G4TPCRunAction::G4TPCRunAction() : G4UserRunAction()
 
     // Creating ntuple
     pG4AnalysisManager->CreateNtuple("G4TPC", "EnergyDeposition");
-    pG4AnalysisManager->CreateNtupleDColumn("CellId");
-    pG4AnalysisManager->CreateNtupleDColumn("CellX");
-    pG4AnalysisManager->CreateNtupleDColumn("CellY");
-    pG4AnalysisManager->CreateNtupleDColumn("CellZ");
-    pG4AnalysisManager->CreateNtupleDColumn("Energy");
     pG4AnalysisManager->FinishNtuple();
 }
 

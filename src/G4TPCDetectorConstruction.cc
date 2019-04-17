@@ -68,7 +68,7 @@ G4TPCDetectorConstruction::G4TPCDetectorConstruction() : G4VUserDetectorConstruc
     m_xWidth(1*m),
     m_yWidth(1*m),
     m_zWidth(1*m),
-    m_nLayers(1000),
+    m_nLayers(200),
     m_pG4LogicalVolumeLAr(nullptr),
     fCheckOverlaps(true)
 {

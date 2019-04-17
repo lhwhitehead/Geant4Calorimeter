@@ -62,21 +62,25 @@ void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
 void G4TPCEventAction::EndOfEventAction(const G4Event* /*event*/)
 {
     G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
-    pG4AnalysisManager->CreateNtupleDColumn("CellId");
-    pG4AnalysisManager->CreateNtupleDColumn("CellX");
-    pG4AnalysisManager->CreateNtupleDColumn("CellY");
-    pG4AnalysisManager->CreateNtupleDColumn("CellZ");
-    pG4AnalysisManager->CreateNtupleDColumn("Energy");
+
+    std::vector<G4int> cellId;
+    std::vector<G4float> cellX, cellY, cellZ, cellEnergy;
 
     for (const auto iter : m_idCellMap)
     {
-        pG4AnalysisManager->FillNtupleDColumn(0, iter.second.GetIdx());
-        pG4AnalysisManager->FillNtupleDColumn(1, iter.second.GetX());
-        pG4AnalysisManager->FillNtupleDColumn(2, iter.second.GetY());
-        pG4AnalysisManager->FillNtupleDColumn(3, iter.second.GetZ());
-        pG4AnalysisManager->FillNtupleDColumn(4, iter.second.GetEnergy());
-        pG4AnalysisManager->AddNtupleRow();
+        cellId.push_back(iter.second.GetIdx());
+        cellX.push_back(iter.second.GetX());
+        cellY.push_back(iter.second.GetY());
+        cellZ.push_back(iter.second.GetZ());
+        cellEnergy.push_back(iter.second.GetEnergy());
     }
+
+    pG4AnalysisManager->CreateNtupleIColumn("CellId", cellId);
+    pG4AnalysisManager->CreateNtupleFColumn("CellX", cellX);
+    pG4AnalysisManager->CreateNtupleFColumn("CellY", cellY);
+    pG4AnalysisManager->CreateNtupleFColumn("CellZ", cellZ);
+    pG4AnalysisManager->CreateNtupleFColumn("CellEnergy", cellEnergy);
+    pG4AnalysisManager->AddNtupleRow();
 
     m_idCellMap.clear();
 }
