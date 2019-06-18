@@ -30,6 +30,7 @@
 
 #include "G4TPCDetectorConstruction.hh"
 #include "G4TPCActionInitialization.hh"
+#include "G4MCParticleUserAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -105,36 +106,45 @@ int main(int argc,char** argv)
     // Detect interactive mode (if no macro provided) and define UI session
     G4UIExecutive* pG4UIExecutive = nullptr;
 
-    if ( ! macro.size() )
-    {
+    if(!macro.size())
         pG4UIExecutive = new G4UIExecutive(argc, argv);
-    }
 
     // Choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
     // Construct the default run manager
 #ifdef G4MULTITHREADED
-    G4MTRunManager * pG4MTRunManager = new G4MTRunManager;
-    if ( nThreads > 0 )
-    {
-        pG4MTRunManager->SetNumberOfThreads(nThreads);
-    }
+    G4MTRunManager *pG4RunManager = new G4MTRunManager;
+
+    if(nThreads > 0)
+        pG4RunManager->SetNumberOfThreads(nThreads);
 #else
-    G4RunManager * pG4MTRunManager = new G4RunManager;
+    G4RunManager *pG4RunManager = new G4RunManager;
 #endif
 
     // Set mandatory initialization classes
-    G4TPCDetectorConstruction* pG4TPCDetectorConstruction = new G4TPCDetectorConstruction();
-    pG4MTRunManager->SetUserInitialization(pG4TPCDetectorConstruction);
+    G4TPCDetectorConstruction *pG4TPCDetectorConstruction = new G4TPCDetectorConstruction();
+    pG4RunManager->SetUserInitialization(pG4TPCDetectorConstruction);
 
-    //G4VModularPhysicsList* pG4VModularPhysicsList = new FTFP_BERT; <- Original
-    G4VModularPhysicsList* pG4VModularPhysicsList = new QGSP_BERT;
+    G4VModularPhysicsList *pG4VModularPhysicsList = new QGSP_BERT;
     pG4VModularPhysicsList->RegisterPhysics(new G4StepLimiterPhysics()); // Has to be added to limit step size
-    pG4MTRunManager->SetUserInitialization(pG4VModularPhysicsList);
+    pG4RunManager->SetUserInitialization(pG4VModularPhysicsList);
 
-    G4TPCActionInitialization* pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction);
-    pG4MTRunManager->SetUserInitialization(pG4TPCActionInitialization);
+    G4TPCActionInitialization *pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction);
+    pG4RunManager->SetUserInitialization(pG4TPCActionInitialization);
+
+    // Set user defined actions
+    G4MCParticleUserAction *pG4MCParticleUserAction = new G4MCParticleUserAction();
+
+    G4UserRunAction *runAction = (G4UserRunAction*) pG4MCParticleUserAction;
+    G4UserEventAction *eventAction = (G4UserEventAction*) pG4MCParticleUserAction;
+    G4UserTrackingAction *trackingAction = (G4UserTrackingAction*) pG4MCParticleUserAction;
+    G4UserSteppingAction *steppingAction = (G4UserSteppingAction*) pG4MCParticleUserAction;
+
+    pG4RunManager->SetUserAction(runAction);
+    pG4RunManager->SetUserAction(eventAction);
+    pG4RunManager->SetUserAction(trackingAction);
+    pG4RunManager->SetUserAction(steppingAction);
 
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
@@ -146,7 +156,7 @@ int main(int argc,char** argv)
     G4UImanager* pG4UImanager = G4UImanager::GetUIpointer();
 
     // Process macro or start UI session
-    if ( macro.size() )
+    if (macro.size())
     {
         // batch mode
         G4String command = "/control/execute ";
@@ -172,7 +182,7 @@ int main(int argc,char** argv)
     // in the main() program !
 
     delete pG4VisManager;
-    delete pG4MTRunManager;
+    delete pG4RunManager;
 }
 
 //------------------------------------------------------------------------------
