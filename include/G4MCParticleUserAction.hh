@@ -9,10 +9,10 @@
 #ifndef GEANT4_MCPARTICLE_USER_ACTION_H
 #define GEANT4_MCPARTICLE_USER_ACTION_H 1
 
-#include "G4UserEventAction"
+#include "G4UserEventAction.hh"
 #include "G4UserRunAction.hh"
-#include "G4UserSteppingAction"
-#include "G4UserTrackingAction"
+#include "G4UserSteppingAction.hh"
+#include "G4UserTrackingAction.hh"
 
 #include "MCParticle.hh"
 
