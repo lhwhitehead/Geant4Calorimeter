@@ -29,7 +29,7 @@
 /// \brief Implementation of the G4TPCSteppingAction class
 
 #include "G4TPCSteppingAction.hh"
-#include "G4TPCEventAction.hh"
+#include "EventContainer.hh"
 #include "G4TPCDetectorConstruction.hh"
 
 #include "G4Step.hh"
@@ -38,10 +38,12 @@
 
 //------------------------------------------------------------------------------
 
-G4TPCSteppingAction::G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, G4TPCEventAction *pG4TPCEventAction) :
+G4TPCSteppingAction::G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, EventContainer *pEventContainer,
+    G4MCParticleUserAction *pG4MCParticleUserAction) :
     G4UserSteppingAction(),
     m_pG4TPCDetectorConstruction(pG4TPCDetectorConstruction),
-    m_pG4TPCEventAction(pG4TPCEventAction)
+    m_pEventContainer(pEventContainer),
+    m_pG4MCParticleUserAction(pG4MCParticleUserAction)
 {
 }
 
@@ -55,15 +57,18 @@ G4TPCSteppingAction::~G4TPCSteppingAction()
 
 void G4TPCSteppingAction::UserSteppingAction(const G4Step *pG4Step)
 {
+//std::cout << "G4TPCSteppingAction::UserSteppingAction Start" << std::endl;
+    m_pG4MCParticleUserAction->UserSteppingAction(pG4Step);
+
     // Collect energy and track length step by step
     G4VPhysicalVolume* pG4VPhysicalVolume = pG4Step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
 
     if (pG4Step->GetTrack()->GetDefinition()->GetPDGCharge() == 0.)
         return;
 
-    G4TPCEventAction::Cell cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
+    Cell cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
     cell.AddEnergy(pG4Step->GetTotalEnergyDeposit());
 
     if (pG4VPhysicalVolume == m_pG4TPCDetectorConstruction->GetLArPV())
-        m_pG4TPCEventAction->AddEnergyDeposition(cell);
+        m_pEventContainer->GetCurrentCellList().AddEnergyDeposition(&cell);
 }

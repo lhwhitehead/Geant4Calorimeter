@@ -31,7 +31,9 @@
 #ifndef G4TPCSteppingAction_h
 #define G4TPCSteppingAction_h 1
 
+#include "G4MCParticleUserAction.hh"
 #include "G4UserSteppingAction.hh"
+
 #include "globals.hh"
 
 class G4TPCDetectorConstruction;
@@ -47,7 +49,8 @@ class G4VPhysicalVolume;
 class G4TPCSteppingAction : public G4UserSteppingAction
 {
 public:
-    G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, G4TPCEventAction *pG4TPCEventAction);
+    G4TPCSteppingAction(const G4TPCDetectorConstruction *pG4TPCDetectorConstruction, EventContainer *pEventContainer,
+        G4MCParticleUserAction *pG4MCParticleUserAction);
 
     virtual ~G4TPCSteppingAction();
 
@@ -55,7 +58,8 @@ public:
 
 private:
     const G4TPCDetectorConstruction *m_pG4TPCDetectorConstruction; ///< Detector construction class
-    G4TPCEventAction                *m_pG4TPCEventAction;          ///< Event action class
+    EventContainer                  *m_pEventContainer;            ///< Event action class
+    G4MCParticleUserAction          *m_pG4MCParticleUserAction;    ///< MCParticle user action class
 };
 
 #endif

@@ -211,7 +211,7 @@ void G4TPCDetectorConstruction::ConstructSDandField()
 
 //------------------------------------------------------------------------------
 
-G4TPCEventAction::Cell G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
+Cell G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
 {
     // ATTN: Cell index is zero at lowest x,y,z coordinate, then builds up along x then y then z
     const int xIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().x() - m_xLow) / (m_xWidth);
@@ -223,7 +223,7 @@ G4TPCEventAction::Cell G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step)
     const float yCell((0.5f + yIndex) * m_yWidth / m_nLayers);
     const float zCell((0.5f + zIndex) * m_zWidth / m_nLayers);
 
-    return G4TPCEventAction::Cell(xCell, yCell, zCell, index);
+    return Cell(xCell, yCell, zCell, index);
 }
 
 //------------------------------------------------------------------------------

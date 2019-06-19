@@ -42,7 +42,7 @@ class G4TPCDetectorConstruction;
 class G4TPCActionInitialization : public G4VUserActionInitialization
 {
 public:
-    G4TPCActionInitialization(G4TPCDetectorConstruction*);
+    G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction);
     virtual ~G4TPCActionInitialization();
 
     virtual void BuildForMaster() const;

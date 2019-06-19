@@ -45,6 +45,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #
 add_executable(g4TPC g4TPC.cc ${sources} ${headers})
 target_link_libraries(g4TPC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+target_compile_options(g4TPC PRIVATE -Wno-misleading-indentation)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

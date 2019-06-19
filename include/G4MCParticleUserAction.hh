@@ -9,6 +9,11 @@
 #ifndef GEANT4_MCPARTICLE_USER_ACTION_H
 #define GEANT4_MCPARTICLE_USER_ACTION_H 1
 
+#include <map>
+
+#include "globals.hh"
+
+#include "EventContainer.hh"
 #include "G4UserEventAction.hh"
 #include "G4UserRunAction.hh"
 #include "G4UserSteppingAction.hh"
@@ -25,7 +30,7 @@ public:
     /**
      *  Default constructor
      */
-    G4MCParticleUserAction();
+    G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut = 0.001);
 
     /**
      *  Destructor
@@ -44,18 +49,33 @@ public:
     void BeginOfEventAction(const G4Event *pG4Event);
     void EndOfEventAction(const G4Event *pG4Event);
 
+    int GetParent(const int trackId) const;
+    bool KnownParticle(const int trackId) const;
+
     /**
      *  Functions expected from a G4UserTrackingAction
      */
-    void PreTrackingAction(const G4Track *pG4Track);
-    void PostTrackingAction(const G4Track *pG4Track);
+    void PreUserTrackingAction(const G4Track *pG4Track);
+    void PostUserTrackingAction(const G4Track *pG4Track);
 
     /**
      *  Functions expected from a G4UserSteppingAction
      */
-    void SteppingAction(const G4Step *pG4Step);
+    void UserSteppingAction(const G4Step *pG4Step);
 
 private:
+    typedef std::map<int, int> IntIntMap;
+
+    EventContainer  *m_pEventContainer;
+    bool             m_storeTrajectories;
+    bool             m_keepEMShowerDaughters;
+    double           m_energyCut;
+    MCParticleInfo   m_currentMCParticleInfo;
+    MCParticleList   m_mcParticleList;
+    IntIntMap        m_parentIdMap;
+    int              m_currentPdgCode;
+    int              m_currentTrackId;
+    int              m_trackIdOffset;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 

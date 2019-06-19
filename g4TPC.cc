@@ -30,7 +30,7 @@
 
 #include "G4TPCDetectorConstruction.hh"
 #include "G4TPCActionInitialization.hh"
-#include "G4MCParticleUserAction.hh"
+//#include "G4MCParticleUserAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -122,7 +122,7 @@ int main(int argc,char** argv)
     G4RunManager *pG4RunManager = new G4RunManager;
 #endif
 
-    // Set mandatory initialization classes
+    // Set mandatory and optional initialization classes
     G4TPCDetectorConstruction *pG4TPCDetectorConstruction = new G4TPCDetectorConstruction();
     pG4RunManager->SetUserInitialization(pG4TPCDetectorConstruction);
 
@@ -132,7 +132,7 @@ int main(int argc,char** argv)
 
     G4TPCActionInitialization *pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction);
     pG4RunManager->SetUserInitialization(pG4TPCActionInitialization);
-
+/*
     // Set user defined actions
     G4MCParticleUserAction *pG4MCParticleUserAction = new G4MCParticleUserAction();
 
@@ -145,7 +145,7 @@ int main(int argc,char** argv)
     pG4RunManager->SetUserAction(eventAction);
     pG4RunManager->SetUserAction(trackingAction);
     pG4RunManager->SetUserAction(steppingAction);
-
+*/
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
     // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.

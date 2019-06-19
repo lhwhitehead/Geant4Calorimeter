@@ -41,7 +41,10 @@
 
 //------------------------------------------------------------------------------
 
-G4TPCEventAction::G4TPCEventAction() : G4UserEventAction()
+G4TPCEventAction::G4TPCEventAction(EventContainer *pEventContainer, G4MCParticleUserAction *pG4MCParticleUserAction) :
+    G4UserEventAction(),
+    m_pEventContainer(pEventContainer),
+    m_pG4MCParticleUserAction(pG4MCParticleUserAction)
 {
 }
 
@@ -53,14 +56,18 @@ G4TPCEventAction::~G4TPCEventAction()
 
 //------------------------------------------------------------------------------
 
-void G4TPCEventAction::BeginOfEventAction(const G4Event* /*event*/)
+void G4TPCEventAction::BeginOfEventAction(const G4Event *pG4Event)
 {
+    m_pG4MCParticleUserAction->BeginOfEventAction(pG4Event);
+    m_pEventContainer->BeginOfEventAction();
 }
 
 //------------------------------------------------------------------------------
 
-void G4TPCEventAction::EndOfEventAction(const G4Event* /*event*/)
+void G4TPCEventAction::EndOfEventAction(const G4Event *pG4Event)
 {
+    m_pG4MCParticleUserAction->EndOfEventAction(pG4Event);
+/*
     G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
 
     std::vector<G4int> cellId;
@@ -81,31 +88,6 @@ void G4TPCEventAction::EndOfEventAction(const G4Event* /*event*/)
     pG4AnalysisManager->CreateNtupleFColumn("CellZ", cellZ);
     pG4AnalysisManager->CreateNtupleFColumn("CellEnergy", cellEnergy);
     pG4AnalysisManager->AddNtupleRow();
-
-    m_idCellMap.clear();
+*/
 }
 
-//------------------------------------------------------------------------------
-
-void G4TPCEventAction::AddEnergyDeposition(const Cell &cell)
-{
-    if (m_idCellMap.find(cell.GetIdx()) == m_idCellMap.end())
-    {
-        m_idCellMap.insert(IntCellMap::value_type(cell.GetIdx(), cell));
-    }
-    else
-    {
-        m_idCellMap.at(cell.GetIdx()).AddEnergy(cell.GetEnergy());
-    }
-}
-
-//------------------------------------------------------------------------------
-
-G4TPCEventAction::Cell::Cell(const float x, const float y, const float z, const int idx) :
-    m_idx(idx),
-    m_x(x),
-    m_y(y),
-    m_z(z),
-    m_energy(0.f)
-{
-}

@@ -31,104 +31,29 @@
 #ifndef G4TPCEventAction_h
 #define G4TPCEventAction_h 1
 
+#include "EventContainer.hh"
+#include "G4MCParticleUserAction.hh"
 #include "G4UserEventAction.hh"
+
 #include "globals.hh"
 
 #include <map>
 #include <vector>
 
 /// Event action class
-///
-/// It defines data members to hold the m_Energy deposit and track lengths
-/// of charged particles in Absober and Gap m_Layers:
-/// - fEnergyAbs, fEnergyGap, fTrackLAbs, fTrackLGap
-/// which are collected step by step via the functions
-/// - AddAbs(), AddGap()
 
 class G4TPCEventAction : public G4UserEventAction
 {
 public:
-    G4TPCEventAction();
+    G4TPCEventAction(EventContainer *pEventContainer, G4MCParticleUserAction *pG4MCParticleUserAction);
     virtual ~G4TPCEventAction();
 
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-    /**
-     *  @brief  Cell class
-     */
-    class Cell
-    {
-    public:
-        Cell(const float x, const float y, const float z, const int idx);
-
-        int GetIdx() const;
-        float GetX() const;
-        float GetY() const;
-        float GetZ() const;
-        float GetEnergy() const;
-
-        void AddEnergy(const float energy);
-
-    private:
-        int   m_idx;    ///< Index
-        float m_x;      ///< X position
-        float m_y;      ///< Y position
-        float m_z;      ///< Z position
-        float m_energy; ///< Enegry
-    };
-
-    /**
-     *  @brief  Add the energy deposition to a cell
-     */
-    void AddEnergyDeposition(const Cell &cell);
-
 private:
-    typedef std::map<int, Cell> IntCellMap;
-
-    IntCellMap m_idCellMap; ///< Map of index of cell to cell
+    EventContainer         *m_pEventContainer;
+    G4MCParticleUserAction *m_pG4MCParticleUserAction;
 };
-
-//------------------------------------------------------------------------------
-
-inline int G4TPCEventAction::Cell::GetIdx() const
-{
-    return m_idx;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::Cell::GetX() const
-{
-    return m_x;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::Cell::GetY() const
-{
-    return m_y;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::Cell::GetZ() const
-{
-    return m_z;
-}
-
-//------------------------------------------------------------------------------
-
-inline float G4TPCEventAction::Cell::GetEnergy() const
-{
-    return m_energy;
-}
-
-//------------------------------------------------------------------------------
-
-inline void G4TPCEventAction::Cell::AddEnergy(const float energy)
-{
-    m_energy += energy;
-}
 
 #endif

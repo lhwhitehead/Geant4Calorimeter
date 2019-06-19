@@ -9,6 +9,8 @@
 #ifndef MCPARTICLE_H
 #define MCPARTICLE_H 1
 
+#include <map>
+
 #include <TLorentzVector.h>
 
 typedef std::vector<int> IntVector;
@@ -31,7 +33,7 @@ public:
     /**
      *  Constructor
      */
-    MCParticle(const int trackId, const int pdg, const int parent, const double mass, const int status);
+    MCParticle(const int trackId, const int pdg, const int parent, const double mass, const int status = 1);
 
     /**
      *  Destructor
@@ -398,6 +400,112 @@ inline double MCParticle::Trajectory::GetEnergy(const int i) const
 inline int MCParticle::Trajectory::GetNumberOfTrajectoryPoints() const
 {
     return m_trajectoryPointVector.size();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+/**
+  *  @brief MCParticleInfo class
+  */
+class MCParticleInfo
+{
+public:
+    /**
+     *  Constructor
+     */
+    MCParticleInfo();
+
+    void Clear();
+    bool HasParticle();
+    bool IsPrimary();
+    bool KeepParticle();
+
+    MCParticle *m_pMCParticle;
+    bool        m_keep;
+    int         m_generatedParticleIndex;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void MCParticleInfo::Clear()
+{
+    m_pMCParticle = nullptr;
+    m_keep = false;
+    m_generatedParticleIndex = std::numeric_limits<int>::max();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline bool MCParticleInfo::HasParticle()
+{
+    return m_pMCParticle;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline bool MCParticleInfo::IsPrimary()
+{
+    return false; // Fix.
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline bool MCParticleInfo::KeepParticle()
+{
+    return (this->HasParticle() && m_keep);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+typedef std::map<int, MCParticle*> IntMCParticleMap;
+
+/**
+ *  @brief MCParticleList class
+ */
+class MCParticleList
+{
+public:
+    /**
+     *  Constructor
+     */
+    MCParticleList();
+
+    void Add(MCParticle *pMCParticle);
+    void Clear();
+    bool KnownParticle(const int trackId) const;
+
+    IntMCParticleMap m_mcParticles;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void MCParticleList::Add(MCParticle *pMCParticle)
+{
+    const int trackId(pMCParticle->GetTrackId());
+
+    if (m_mcParticles.find(trackId) != m_mcParticles.end())
+        return;
+
+    m_mcParticles.insert(IntMCParticleMap::value_type(trackId, pMCParticle));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void MCParticleList::Clear()
+{
+    m_mcParticles.clear();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline bool MCParticleList::KnownParticle(const int trackId) const
+{
+    if (m_mcParticles.find(trackId) != m_mcParticles.end())
+        return true;
+
+    return false;
 }
 
 #endif // #ifndef MCPARTICLE_H

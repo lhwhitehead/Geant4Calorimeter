@@ -32,7 +32,7 @@
 #define G4TPCDetectorConstruction_h 1
 
 #include "G4VUserDetectorConstruction.hh"
-#include "G4TPCEventAction.hh"
+#include "Cell.hh"
 
 #include "globals.hh"
 #include <math.h>
@@ -71,7 +71,7 @@ public:
      *
      *  @return the cell index
      */
-    G4TPCEventAction::Cell GetCell(const G4Step *pG4Step) const;
+    Cell GetCell(const G4Step *pG4Step) const;
 
 private:
     void DefineMaterials();

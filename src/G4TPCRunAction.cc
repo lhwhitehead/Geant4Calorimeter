@@ -40,10 +40,13 @@
 
 //------------------------------------------------------------------------------
 
-G4TPCRunAction::G4TPCRunAction() : G4UserRunAction()
+G4TPCRunAction::G4TPCRunAction(EventContainer *pEventContainer, G4MCParticleUserAction *pG4MCParticleUserAction) :
+    G4UserRunAction(),
+    m_pEventContainer(pEventContainer),
+    m_pG4MCParticleUserAction(pG4MCParticleUserAction)
 {
     G4RunManager::GetRunManager()->SetPrintProgress(1);
-
+/*
     G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
 
     // Create directories
@@ -53,6 +56,7 @@ G4TPCRunAction::G4TPCRunAction() : G4UserRunAction()
     // Creating ntuple
     pG4AnalysisManager->CreateNtuple("G4TPC", "EnergyDeposition");
     pG4AnalysisManager->FinishNtuple();
+*/
 }
 
 //------------------------------------------------------------------------------
@@ -64,15 +68,16 @@ G4TPCRunAction::~G4TPCRunAction()
 
 //------------------------------------------------------------------------------
 
-void G4TPCRunAction::BeginOfRunAction(const G4Run* /*run*/)
+void G4TPCRunAction::BeginOfRunAction(const G4Run *pG4Run)
 {
+    m_pG4MCParticleUserAction->BeginOfRunAction(pG4Run);
+
     //inform the runManager to save random number seed
     //G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
     /*
      * Added autoseed functionality to resolve issue with specifying seeds greater than LONG_MAX
      */
-
     G4cout << "*******************" << G4endl;
     G4cout << "*** AUTOSEED ON ***" << G4endl;
     G4cout << "*******************" << G4endl;
@@ -82,17 +87,24 @@ void G4TPCRunAction::BeginOfRunAction(const G4Run* /*run*/)
     seeds[1] = (long) (systime*G4UniformRand());
     G4Random::setTheSeeds(seeds);
     G4Random::showEngineStatus();
-
+/*
     // Get analysis manager
     G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
     pG4AnalysisManager->OpenFile();
+*/
+    m_pG4MCParticleUserAction->BeginOfRunAction(pG4Run);
 }
 
 //------------------------------------------------------------------------------
 
-void G4TPCRunAction::EndOfRunAction(const G4Run* /*run*/)
+void G4TPCRunAction::EndOfRunAction(const G4Run *pG4Run)
 {
+    m_pG4MCParticleUserAction->EndOfRunAction(pG4Run);
+/*
     G4AnalysisManager* pG4AnalysisManager = G4AnalysisManager::Instance();
     pG4AnalysisManager->Write();
     pG4AnalysisManager->CloseFile();
+*/
+    m_pEventContainer->SaveXml();
 }
+

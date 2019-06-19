@@ -31,7 +31,9 @@
 #ifndef G4TPCRunAction_h
 #define G4TPCRunAction_h 1
 
+#include "G4MCParticleUserAction.hh"
 #include "G4UserRunAction.hh"
+
 #include "globals.hh"
 
 class G4Run;
@@ -57,12 +59,15 @@ class G4Run;
 class G4TPCRunAction : public G4UserRunAction
 {
 public:
-    G4TPCRunAction();
+    G4TPCRunAction(EventContainer *pEventContainer, G4MCParticleUserAction *pG4MCParticleUserAction);
     virtual ~G4TPCRunAction();
 
-    virtual void BeginOfRunAction(const G4Run*);
-    virtual void   EndOfRunAction(const G4Run*);
+    virtual void BeginOfRunAction(const G4Run *pG4Run);
+    virtual void EndOfRunAction(const G4Run *pG4Run);
+
+private:
+    EventContainer         *m_pEventContainer;
+    G4MCParticleUserAction *m_pG4MCParticleUserAction;
 };
 
 #endif
-

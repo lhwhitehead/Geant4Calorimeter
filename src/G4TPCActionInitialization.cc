@@ -28,6 +28,8 @@
 /// \file G4TPCActionInitialization.cc
 /// \brief Implementation of the G4TPCActionInitialization class
 
+#include "EventContainer.hh"
+#include "G4MCParticleUserAction.hh"
 #include "G4TPCActionInitialization.hh"
 #include "G4TPCPrimaryGeneratorAction.hh"
 #include "G4TPCRunAction.hh"
@@ -37,7 +39,8 @@
 
 //------------------------------------------------------------------------------
 
-G4TPCActionInitialization::G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction) : G4VUserActionInitialization(),
+G4TPCActionInitialization::G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction) :
+    G4VUserActionInitialization(),
     m_pG4TPCDetectorConstruction(pG4TPCDetectorConstruction)
 {
 }
@@ -52,17 +55,21 @@ G4TPCActionInitialization::~G4TPCActionInitialization()
 
 void G4TPCActionInitialization::BuildForMaster() const
 {
-    SetUserAction(new G4TPCRunAction);
 }
 
 //------------------------------------------------------------------------------
 
 void G4TPCActionInitialization::Build() const
 {
+    // Set user defined actions
+    EventContainer *pEventContainer = new EventContainer();
+    G4MCParticleUserAction *pG4MCParticleUserAction = new G4MCParticleUserAction(pEventContainer);
+
     SetUserAction(new G4TPCPrimaryGeneratorAction());
-    SetUserAction(new G4TPCRunAction());
-    G4TPCEventAction* pG4TPCEventAction = new G4TPCEventAction();
-    SetUserAction(pG4TPCEventAction);
-    SetUserAction(new G4TPCSteppingAction(m_pG4TPCDetectorConstruction, pG4TPCEventAction));
+    SetUserAction(new G4TPCRunAction(pEventContainer, pG4MCParticleUserAction));
+    SetUserAction(new G4TPCEventAction(pEventContainer, pG4MCParticleUserAction));
+    G4UserTrackingAction *trackingAction = (G4UserTrackingAction*) pG4MCParticleUserAction;
+    SetUserAction(trackingAction);
+    SetUserAction(new G4TPCSteppingAction(m_pG4TPCDetectorConstruction, pEventContainer, pG4MCParticleUserAction));
 }
 
