@@ -459,6 +459,7 @@ inline bool MCParticleInfo::KeepParticle()
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
+typedef std::map<int, int> IntIntMap;
 typedef std::map<int, MCParticle*> IntMCParticleMap;
 
 /**
@@ -472,16 +473,18 @@ public:
      */
     MCParticleList();
 
-    void Add(MCParticle *pMCParticle);
+    void Add(MCParticle *pMCParticle, const int geantTrackId);
     void Clear();
     bool KnownParticle(const int trackId) const;
 
-    IntMCParticleMap m_mcParticles;
+    IntMCParticleMap m_mcParticles;          ///< Map of Id to MCParticle (includes offset for each event)
+    IntMCParticleMap m_trackIdToMCParticles; ///< Map of geant4 trackId to MCParticle (no offset)
+    IntIntMap        m_parentIdMap;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
-inline void MCParticleList::Add(MCParticle *pMCParticle)
+inline void MCParticleList::Add(MCParticle *pMCParticle, const int geantTrackId)
 {
     const int trackId(pMCParticle->GetTrackId());
 
@@ -489,6 +492,7 @@ inline void MCParticleList::Add(MCParticle *pMCParticle)
         return;
 
     m_mcParticles.insert(IntMCParticleMap::value_type(trackId, pMCParticle));
+    m_trackIdToMCParticles.insert(IntMCParticleMap::value_type(geantTrackId, pMCParticle));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 

@@ -66,9 +66,11 @@ void G4TPCSteppingAction::UserSteppingAction(const G4Step *pG4Step)
     if (pG4Step->GetTrack()->GetDefinition()->GetPDGCharge() == 0.)
         return;
 
-    Cell cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
-    cell.AddEnergy(pG4Step->GetTotalEnergyDeposit());
-
     if (pG4VPhysicalVolume == m_pG4TPCDetectorConstruction->GetLArPV())
-        m_pEventContainer->GetCurrentCellList().AddEnergyDeposition(&cell);
+    {
+        // ATTN : Cell is deleted if only used to add energy to pre-existing cell, retained otherwise
+        Cell *pCell = new Cell(m_pG4TPCDetectorConstruction->GetCell(pG4Step));
+        pCell->AddEnergy(pG4Step->GetTotalEnergyDeposit());
+        m_pEventContainer->GetCurrentCellList().AddEnergyDeposition(pCell, pG4Step->GetTrack()->GetTrackID());
+    }
 }

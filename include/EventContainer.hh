@@ -31,9 +31,14 @@ public:
     ~EventContainer();
 
     /**
-     *  Increment variables for next event
+     *  Increment variables for current event
      */
     void BeginOfEventAction();
+
+    /**
+     *  Increment variables for next event
+     */
+    void EndOfEventAction();
 
     /**
      *  Save events to xml
@@ -68,8 +73,8 @@ private:
 
 inline CellList &EventContainer::GetCurrentCellList()
 {
-    if ((m_cells.size() + 1) == m_eventNumber)
-        m_cells.push_back(CellList());
+//    if ((m_cells.size() + 1) == m_eventNumber)
+//        m_cells.push_back(CellList());
 
     return m_cells.at(m_eventNumber);
 }

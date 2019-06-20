@@ -10,6 +10,7 @@
 #define CELL_H 1
 
 #include <map>
+#include <vector>
 
 /**
  *  @brief Cell class
@@ -89,6 +90,9 @@ inline void Cell::AddEnergy(const float energy)
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
 typedef std::map<int, Cell*> IntCellMap;
+typedef std::pair<int, float> IntFloatPair;
+typedef std::vector<IntFloatPair> IntFloatVector;
+typedef std::map<int, IntFloatVector> MCComponents;
 
 /**
  *  @brief CellList class
@@ -102,13 +106,17 @@ public:
     CellList();
 
     /**
-     *  Desctuctor
+     *  Destructor
      */
     ~CellList();
 
-    void AddEnergyDeposition(Cell *pCell);
+    /**
+     *  Add energy deposition from given geant track
+     */
+    void AddEnergyDeposition(Cell *pCell, const int geantTrackId);
 
-    IntCellMap m_idCellMap;
+    IntCellMap     m_idCellMap;
+    MCComponents   m_mcComponents;
 };
 
 #endif // #ifndef CELL_H

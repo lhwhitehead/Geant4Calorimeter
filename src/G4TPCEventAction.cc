@@ -67,6 +67,8 @@ void G4TPCEventAction::BeginOfEventAction(const G4Event *pG4Event)
 void G4TPCEventAction::EndOfEventAction(const G4Event *pG4Event)
 {
     m_pG4MCParticleUserAction->EndOfEventAction(pG4Event);
+    m_pEventContainer->EndOfEventAction();
+
 /*
     G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
 
