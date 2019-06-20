@@ -67,7 +67,7 @@ const TLorentzVector &MCParticle::Trajectory::GetMomentum(const int i) const
 {
     TrajectoryPointVector::const_iterator iter = m_trajectoryPointVector.begin();
     std::advance(iter, i);
-    return (*iter).first;
+    return (*iter).second;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 

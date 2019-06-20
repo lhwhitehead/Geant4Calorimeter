@@ -132,20 +132,7 @@ int main(int argc,char** argv)
 
     G4TPCActionInitialization *pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction);
     pG4RunManager->SetUserInitialization(pG4TPCActionInitialization);
-/*
-    // Set user defined actions
-    G4MCParticleUserAction *pG4MCParticleUserAction = new G4MCParticleUserAction();
 
-    G4UserRunAction *runAction = (G4UserRunAction*) pG4MCParticleUserAction;
-    G4UserEventAction *eventAction = (G4UserEventAction*) pG4MCParticleUserAction;
-    G4UserTrackingAction *trackingAction = (G4UserTrackingAction*) pG4MCParticleUserAction;
-    G4UserSteppingAction *steppingAction = (G4UserSteppingAction*) pG4MCParticleUserAction;
-
-    pG4RunManager->SetUserAction(runAction);
-    pG4RunManager->SetUserAction(eventAction);
-    pG4RunManager->SetUserAction(trackingAction);
-    pG4RunManager->SetUserAction(steppingAction);
-*/
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
     // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
