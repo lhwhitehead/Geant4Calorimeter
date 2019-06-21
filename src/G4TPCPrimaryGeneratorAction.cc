@@ -28,6 +28,7 @@
 /// \file G4TPCPrimaryGeneratorAction.cc
 /// \brief Implementation of the G4TPCPrimaryGeneratorAction class
 
+#include <chrono>
 #include <random>
 
 #include "G4TPCPrimaryGeneratorAction.hh"
@@ -79,10 +80,10 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4LogicalVolume *worlLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
     G4Box* worldBox = 0;
 
-    if ( worlLV)
+    if (worlLV)
         worldBox = dynamic_cast< G4Box*>(worlLV->GetSolid());
 
-    if ( worldBox )
+    if (worldBox)
     {
         worldZHalfLength = worldBox->GetZHalfLength();
     }
@@ -95,7 +96,9 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         G4Exception("G4TPCPrimaryGeneratorAction::GeneratePrimaries()", "MyCode0002", JustWarning, msg);
     }
 
-    std::default_random_engine generator;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+
     std::normal_distribution<double> distribution(0.,50.0);
     std::normal_distribution<double> distribution2(0.,0.05);
     std::normal_distribution<double> distribution3(1.,0.01);
@@ -105,7 +108,7 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     {
         G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("mu+");
         m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
-        m_pG4ParticleGun->SetParticlePosition(G4ThreeVector(distribution(generator), distribution(generator), -worldZHalfLength));
+        m_pG4ParticleGun->SetParticlePosition(G4ThreeVector(distribution(generator)*mm, distribution(generator)*mm, -worldZHalfLength));
         m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(distribution2(generator), distribution2(generator), distribution3(generator)));
         m_pG4ParticleGun->SetParticleEnergy(1.*GeV);
         m_pG4ParticleGun->GeneratePrimaryVertex(anEvent);

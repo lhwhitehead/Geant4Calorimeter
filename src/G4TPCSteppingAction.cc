@@ -57,7 +57,6 @@ G4TPCSteppingAction::~G4TPCSteppingAction()
 
 void G4TPCSteppingAction::UserSteppingAction(const G4Step *pG4Step)
 {
-//std::cout << "G4TPCSteppingAction::UserSteppingAction Start" << std::endl;
     m_pG4MCParticleUserAction->UserSteppingAction(pG4Step);
 
     // Collect energy and track length step by step

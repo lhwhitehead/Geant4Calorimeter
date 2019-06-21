@@ -68,28 +68,5 @@ void G4TPCEventAction::EndOfEventAction(const G4Event *pG4Event)
 {
     m_pG4MCParticleUserAction->EndOfEventAction(pG4Event);
     m_pEventContainer->EndOfEventAction();
-
-/*
-    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
-
-    std::vector<G4int> cellId;
-    std::vector<G4float> cellX, cellY, cellZ, cellEnergy;
-
-    for (const auto iter : m_idCellMap)
-    {
-        cellId.push_back(iter.second.GetIdx());
-        cellX.push_back(iter.second.GetX());
-        cellY.push_back(iter.second.GetY());
-        cellZ.push_back(iter.second.GetZ());
-        cellEnergy.push_back(iter.second.GetEnergy());
-    }
-
-    pG4AnalysisManager->CreateNtupleIColumn("CellId", cellId);
-    pG4AnalysisManager->CreateNtupleFColumn("CellX", cellX);
-    pG4AnalysisManager->CreateNtupleFColumn("CellY", cellY);
-    pG4AnalysisManager->CreateNtupleFColumn("CellZ", cellZ);
-    pG4AnalysisManager->CreateNtupleFColumn("CellEnergy", cellEnergy);
-    pG4AnalysisManager->AddNtupleRow();
-*/
 }
 

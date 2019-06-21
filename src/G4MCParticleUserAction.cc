@@ -33,22 +33,18 @@ G4MCParticleUserAction::~G4MCParticleUserAction()
 
 void G4MCParticleUserAction::BeginOfRunAction(const G4Run * /*pG4Run*/)
 {
-//    std::cout << "G4MCParticleUserAction::BeginOfRunAction : " << pG4Run->GetRunID() << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
 void G4MCParticleUserAction::EndOfRunAction(const G4Run * /*pG4Run*/)
 {
-//    std::cout << "G4MCParticleUserAction::EndOfRunAction : " << pG4Run->GetRunID() << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
 void G4MCParticleUserAction::BeginOfEventAction(const G4Event * /*pG4Event*/)
 {
-//    std::cout << "G4MCParticleUserAction::BeginOfEventAction : " << pG4Event->GetEventID() << std::endl;
-
     m_currentMCParticleInfo.Clear();
     m_mcParticleList.Clear();
     m_currentTrackId = std::numeric_limits<int>::max();
@@ -60,8 +56,6 @@ void G4MCParticleUserAction::BeginOfEventAction(const G4Event * /*pG4Event*/)
 
 void G4MCParticleUserAction::EndOfEventAction(const G4Event * /*pG4Event*/)
 {
-//    std::cout << "G4MCParticleUserAction::EndOfEventAction : " << pG4Event->GetEventID() << std::endl;
-
     for (auto iter : m_mcParticleList.m_mcParticles)
     {
         const int trackId(iter.first);
@@ -111,16 +105,11 @@ bool G4MCParticleUserAction::KnownParticle(const int trackId) const
 
 void G4MCParticleUserAction::PreUserTrackingAction(const G4Track *pG4Track)
 {
-//    std::cout << "G4MCParticleUserAction::PreTrackingAction : " << pG4Track->GetTrackID() << std::endl;
-
     G4ParticleDefinition *pG4ParticleDefinition = pG4Track->GetDefinition();
     int pdgCode(pG4ParticleDefinition->GetPDGEncoding());
     int trackID(pG4Track->GetTrackID() + m_trackIdOffset);
     int parentTrackId(pG4Track->GetParentID() + m_trackIdOffset);
 
-//std::cout << "G4MCParticleUserAction::PreUserTrackingAction : Begin - Track Id " << trackID << ", Parent Track Id " << parentTrackId << std::endl;
-
-//    m_currentTrackId = pG4Track->GetTrackID();
     m_currentPdgCode = pdgCode;
 
     const G4DynamicParticle *pG4DynamicParticle(pG4Track->GetDynamicParticle());
@@ -179,13 +168,11 @@ void G4MCParticleUserAction::PreUserTrackingAction(const G4Track *pG4Track)
     }
 
     double mass(pG4DynamicParticle->GetMass()/CLHEP::GeV);
-
     m_currentMCParticleInfo.Clear();
     m_currentMCParticleInfo.m_pMCParticle = new MCParticle(trackID, pdgCode, parentTrackId, mass);
     m_currentMCParticleInfo.m_generatedParticleIndex = 0;
     m_currentMCParticleInfo.m_keep = true;
 
-//std::cout << "New MCParticle : " << pG4Track->GetTrackID() << std::endl;
     m_mcParticleList.Add(m_currentMCParticleInfo.m_pMCParticle, pG4Track->GetTrackID());
 }
 
@@ -193,7 +180,6 @@ void G4MCParticleUserAction::PreUserTrackingAction(const G4Track *pG4Track)
 
 void G4MCParticleUserAction::PostUserTrackingAction(const G4Track * /*pG4Track*/)
 {
-//    std::cout << "G4MCParticleUserAction::PostTrackingAction : " << pG4Track->GetTrackID() << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
@@ -207,14 +193,12 @@ void G4MCParticleUserAction::UserSteppingAction(const G4Step *pG4Step)
 
     const G4ThreeVector position(pPreStepPoint->GetPosition());
     const double time(pPreStepPoint->GetGlobalTime());
-    const TLorentzVector fourPos(position.x() / CLHEP::cm, position.y() / CLHEP::cm, position.z() / CLHEP::cm, time / CLHEP::ns);
+    const TLorentzVector fourPos(position.x() / CLHEP::mm, position.y() / CLHEP::mm, position.z() / CLHEP::mm, time / CLHEP::ns);
 
     const G4ThreeVector momentum(pPreStepPoint->GetMomentum());
     const double energy(pPreStepPoint->GetTotalEnergy());
     const TLorentzVector fourMom(momentum.x() / CLHEP::GeV, momentum.y() / CLHEP::GeV, momentum.z() / CLHEP::GeV, energy / CLHEP::GeV);
 
     m_currentMCParticleInfo.m_pMCParticle->AddTrajectoryPoint(fourPos, fourMom);
-
-//    std::cout << "Step energy deposition : " << pG4Step->GetTotalEnergyDeposit() << std::endl;
 }
 

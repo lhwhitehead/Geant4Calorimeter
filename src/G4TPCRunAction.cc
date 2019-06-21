@@ -46,17 +46,6 @@ G4TPCRunAction::G4TPCRunAction(EventContainer *pEventContainer, G4MCParticleUser
     m_pG4MCParticleUserAction(pG4MCParticleUserAction)
 {
     G4RunManager::GetRunManager()->SetPrintProgress(1);
-/*
-    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
-
-    // Create directories
-    pG4AnalysisManager->SetVerboseLevel(1);
-    pG4AnalysisManager->SetFirstHistoId(1);
-
-    // Creating ntuple
-    pG4AnalysisManager->CreateNtuple("G4TPC", "EnergyDeposition");
-    pG4AnalysisManager->FinishNtuple();
-*/
 }
 
 //------------------------------------------------------------------------------
@@ -87,11 +76,7 @@ void G4TPCRunAction::BeginOfRunAction(const G4Run *pG4Run)
     seeds[1] = (long) (systime*G4UniformRand());
     G4Random::setTheSeeds(seeds);
     G4Random::showEngineStatus();
-/*
-    // Get analysis manager
-    G4AnalysisManager *pG4AnalysisManager = G4AnalysisManager::Instance();
-    pG4AnalysisManager->OpenFile();
-*/
+
     m_pG4MCParticleUserAction->BeginOfRunAction(pG4Run);
 }
 
@@ -100,11 +85,6 @@ void G4TPCRunAction::BeginOfRunAction(const G4Run *pG4Run)
 void G4TPCRunAction::EndOfRunAction(const G4Run *pG4Run)
 {
     m_pG4MCParticleUserAction->EndOfRunAction(pG4Run);
-/*
-    G4AnalysisManager* pG4AnalysisManager = G4AnalysisManager::Instance();
-    pG4AnalysisManager->Write();
-    pG4AnalysisManager->CloseFile();
-*/
     m_pEventContainer->SaveXml();
 }
 

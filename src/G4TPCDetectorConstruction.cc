@@ -62,12 +62,12 @@ G4ThreadLocal G4GlobalMagFieldMessenger* G4TPCDetectorConstruction::fMagFieldMes
 //------------------------------------------------------------------------------
 
 G4TPCDetectorConstruction::G4TPCDetectorConstruction() : G4VUserDetectorConstruction(),
-    m_xCenter(0*m),
-    m_yCenter(0*m),
-    m_zCenter(0*m),
-    m_xWidth(1*m),
-    m_yWidth(1*m),
-    m_zWidth(1*m),
+    m_xCenter(0*mm),
+    m_yCenter(0*mm),
+    m_zCenter(0*mm),
+    m_xWidth(1000*mm),
+    m_yWidth(1000*mm),
+    m_zWidth(1000*mm),
     m_nLayers(200),
     m_pG4LogicalVolumeLAr(nullptr),
     fCheckOverlaps(true)
@@ -119,7 +119,7 @@ void G4TPCDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
 {
-    const G4double worldScale(1.2);
+    const G4double worldScale(1.05);
     G4ThreeVector worldCenter(m_xCenter, m_yCenter, m_zCenter);
 
     // Get materials
@@ -134,7 +134,7 @@ G4VPhysicalVolume* G4TPCDetectorConstruction::DefineVolumes()
     }
 
     // World
-    G4VSolid* worldS = new G4Box("World", m_xWidth * worldScale, m_yWidth * worldScale, m_zWidth * worldScale);
+    G4VSolid* worldS = new G4Box("World", m_xWidth * worldScale / 2.f, m_yWidth * worldScale / 2.f, m_zWidth * worldScale / 2.f);
     G4LogicalVolume* worldLV = new G4LogicalVolume(worldS, defaultMaterial, "World");
     G4VPhysicalVolume* worldPV = new G4PVPlacement(0, worldCenter, worldLV, "World", 0, false, 0, fCheckOverlaps);
 
@@ -217,11 +217,19 @@ Cell G4TPCDetectorConstruction::GetCell(const G4Step *pG4Step) const
     const int xIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().x() - m_xLow) / (m_xWidth);
     const int yIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().y() - m_yLow) / (m_yWidth);
     const int zIndex = m_nLayers * (pG4Step->GetPreStepPoint()->GetPosition().z() - m_zLow) / (m_zWidth);
-
     const int index(xIndex + yIndex * m_nLayers + zIndex * m_nLayers * m_nLayers);
-    const float xCell((0.5f + xIndex) * m_xWidth / m_nLayers);
-    const float yCell((0.5f + yIndex) * m_yWidth / m_nLayers);
-    const float zCell((0.5f + zIndex) * m_zWidth / m_nLayers);
+
+    const float deltaX(m_xWidth / m_nLayers);
+    const int xBin(std::floor((pG4Step->GetPreStepPoint()->GetPosition().x() + 0.5f * deltaX)/deltaX));
+    const float xCell(xBin * deltaX);
+
+    const float deltaY(m_yWidth / m_nLayers);
+    const int yBin(std::floor((pG4Step->GetPreStepPoint()->GetPosition().y() + 0.5f * deltaY)/deltaY));
+    const float yCell(yBin * deltaY);
+
+    const float deltaZ(m_zWidth / m_nLayers);
+    const int zBin(std::floor((pG4Step->GetPreStepPoint()->GetPosition().z() + 0.5f * deltaZ)/deltaZ));
+    const float zCell(zBin * deltaZ);
 
     return Cell(xCell, yCell, zCell, index);
 }
