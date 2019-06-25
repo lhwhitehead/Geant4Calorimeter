@@ -170,7 +170,7 @@ inline void MCParticle::AddDaughter(const int trackId)
 
 inline int MCParticle::GetDaughter(const int trackId) const
 {
-    if (std::abs(trackId) < m_daughters.size())
+    if (trackId < static_cast<int>(m_daughters.size()))
         m_daughters.at(trackId);
 
     return 0;

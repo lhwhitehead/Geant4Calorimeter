@@ -67,7 +67,6 @@ private:
     typedef std::map<int, int> IntIntMap;
 
     EventContainer  *m_pEventContainer;
-    bool             m_storeTrajectories;
     bool             m_keepEMShowerDaughters;
     double           m_energyCut;
     MCParticleInfo   m_currentMCParticleInfo;

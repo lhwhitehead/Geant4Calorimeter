@@ -46,17 +46,19 @@
 
 //------------------------------------------------------------------------------
 
-G4TPCPrimaryGeneratorAction::G4TPCPrimaryGeneratorAction() : G4VUserPrimaryGeneratorAction(),
-    m_pG4ParticleGun(0)
+G4TPCPrimaryGeneratorAction::G4TPCPrimaryGeneratorAction(const InputParameters &parameters) :
+    G4VUserPrimaryGeneratorAction(),
+    m_pG4ParticleGun(0),
+    m_parameters(parameters)
 {
     G4int numberOfParticleInstances = 1;
     m_pG4ParticleGun = new G4ParticleGun(numberOfParticleInstances);
 
     // default particle kinematic
-    G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("e-");
+    G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
     m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
     m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-    m_pG4ParticleGun->SetParticleEnergy(50.*MeV);
+    m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
 }
 
 //------------------------------------------------------------------------------
@@ -100,17 +102,17 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     std::default_random_engine generator(seed);
 
     std::normal_distribution<double> distribution(0.,50.0);
-    std::normal_distribution<double> distribution2(0.,0.05);
+    std::normal_distribution<double> distribution2(0.,0.2);
     std::normal_distribution<double> distribution3(1.,0.01);
 
     // Set gun position
-    for (int particle = 0; particle < 2; particle++)
+    for (int particle = 0; particle < m_parameters.m_nParticlesPerEvent; particle++)
     {
-        G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("mu+");
+        G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
         m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
         m_pG4ParticleGun->SetParticlePosition(G4ThreeVector(distribution(generator)*mm, distribution(generator)*mm, -worldZHalfLength));
         m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(distribution2(generator), distribution2(generator), distribution3(generator)));
-        m_pG4ParticleGun->SetParticleEnergy(1.*GeV);
+        m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
         m_pG4ParticleGun->GeneratePrimaryVertex(anEvent);
     }
 }

@@ -14,7 +14,6 @@
 
 G4MCParticleUserAction::G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut) :
     m_pEventContainer(pEventContainer),
-    m_storeTrajectories(false),
     m_keepEMShowerDaughters(false),
     m_energyCut(energyCut * CLHEP::GeV),
     m_currentPdgCode(0),

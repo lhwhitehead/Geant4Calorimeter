@@ -32,17 +32,17 @@
 #define G4TPCActionInitialization_h 1
 
 #include "G4VUserActionInitialization.hh"
+#include "InputParameters.hh"
 
 class G4TPCDetectorConstruction;
 
 /**
  *  @brief  Action initialization class.
  */
-
 class G4TPCActionInitialization : public G4VUserActionInitialization
 {
 public:
-    G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction);
+    G4TPCActionInitialization(G4TPCDetectorConstruction *pG4TPCDetectorConstruction, const InputParameters &parameters);
     virtual ~G4TPCActionInitialization();
 
     virtual void BuildForMaster() const;
@@ -50,6 +50,7 @@ public:
 
 private:
     G4TPCDetectorConstruction *m_pG4TPCDetectorConstruction; ///< Detector construction class
+    InputParameters            m_parameters;                 ///< Input parameters
 };
 
 #endif

@@ -33,6 +33,7 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
+#include "InputParameters.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -47,7 +48,7 @@ class G4Event;
 class G4TPCPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-    G4TPCPrimaryGeneratorAction();
+    G4TPCPrimaryGeneratorAction(const InputParameters &parameters);
     virtual ~G4TPCPrimaryGeneratorAction();
 
     virtual void GeneratePrimaries(G4Event* event);
@@ -55,7 +56,8 @@ public:
     void SetRandomFlag(G4bool value);
 
 private:
-    G4ParticleGun*  m_pG4ParticleGun; // G4 particle gun
+    G4ParticleGun   *m_pG4ParticleGun; ///< G4 particle gun
+    InputParameters  m_parameters;     ///< Input parameters
 };
 
 #endif

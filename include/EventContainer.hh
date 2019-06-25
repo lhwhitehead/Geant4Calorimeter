@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "Cell.hh"
+#include "InputParameters.hh"
 #include "MCParticle.hh"
 
 /**
@@ -23,7 +24,7 @@ public:
     /**
      *  Default constructor
      */
-    EventContainer();
+    EventContainer(const InputParameters &parameters);
 
     /**
      *  Destructor
@@ -67,15 +68,13 @@ private:
     int                  m_eventNumber;
     MCParticleListVector m_mcParticles;
     CellListVector       m_cells;
+    InputParameters      m_parameters;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
 inline CellList &EventContainer::GetCurrentCellList()
 {
-//    if ((m_cells.size() + 1) == m_eventNumber)
-//        m_cells.push_back(CellList());
-
     return m_cells.at(m_eventNumber);
 }
 
@@ -83,9 +82,6 @@ inline CellList &EventContainer::GetCurrentCellList()
 
 inline MCParticleList &EventContainer::GetCurrentMCParticleList()
 {
-//    if (m_mcParticles.size() < m_eventNumber)
-//        m_mcParticles.push_back(MCParticleList());
-
     return m_mcParticles.at(m_eventNumber);
 }
 
