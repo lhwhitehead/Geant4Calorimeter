@@ -13,7 +13,9 @@ InputParameters::InputParameters() :
     m_outputFileName(""),
     m_energy(-1.),
     m_nEvents(1),
-    m_nParticlesPerEvent(1)
+    m_nParticlesPerEvent(1),
+    m_keepEMShowerDaughters(false),
+    m_energyCut(0.001)
 {
 }
 
@@ -42,6 +44,12 @@ bool InputParameters::Valid()
     if (m_outputFileName.empty())
     {
         std::cout << "Missing output file name" << std::endl;
+        return false;
+    }
+
+    if (m_energyCut < 0.)
+    {
+        std::cout << "Invalid energy cut specified" << std::endl;
         return false;
     }
 

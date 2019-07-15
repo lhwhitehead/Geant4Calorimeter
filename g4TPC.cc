@@ -52,7 +52,7 @@ namespace
 void PrintUsage()
 {
     G4cerr << " Usage: " << G4endl;
-    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName]" << G4endl;
+    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName] [-d keepEMShowerDaughters true/false]" << G4endl;
 }
 
 }
@@ -62,7 +62,7 @@ void PrintUsage()
 int main(int argc,char** argv)
 {
     // Evaluate arguments
-    if ( argc > 9 )
+    if ( argc > 11 )
     {
         PrintUsage();
         return 1;
@@ -87,6 +87,20 @@ int main(int argc,char** argv)
         else if (G4String(argv[i])  == "-o")
         {
             parameters.m_outputFileName = argv[i+1];
+        }
+        else if (G4String(argv[i])  == "-d")
+        {
+            std::string emDaughterOption(argv[i+1]);
+            std::transform(emDaughterOption.begin(), emDaughterOption.end(), emDaughterOption.begin(), ::tolower);
+
+            if (emDaughterOption == "true")
+            {
+                parameters.m_keepEMShowerDaughters = true;
+            }
+            else
+            {
+                parameters.m_keepEMShowerDaughters = false;
+            }
         }
     }
 

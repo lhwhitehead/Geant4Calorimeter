@@ -78,40 +78,46 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // on DetectorConstruction class we get world volume
     // from G4LogicalVolumeStore
 
-    G4double worldZHalfLength = 0;
     G4LogicalVolume *worlLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
-    G4Box* worldBox = 0;
+    G4LogicalVolume *tpcLV = G4LogicalVolumeStore::GetInstance()->GetVolume("Calorimeter");
+    G4Box *worldBox = nullptr;
+    G4Box *tpcBox = nullptr;
 
     if (worlLV)
-        worldBox = dynamic_cast< G4Box*>(worlLV->GetSolid());
+        worldBox = dynamic_cast<G4Box*>(worlLV->GetSolid());
 
-    if (worldBox)
-    {
-        worldZHalfLength = worldBox->GetZHalfLength();
-    }
-    else
+    if (tpcLV)
+        tpcBox = dynamic_cast<G4Box*>(tpcLV->GetSolid());
+
+    if (!worldBox || !tpcBox)
     {
         G4ExceptionDescription msg;
-        msg << "World volume of box not found." << G4endl;
-        msg << "Perhaps you have changed geometry." << G4endl;
-        msg << "The gun will be place in the center.";
-        G4Exception("G4TPCPrimaryGeneratorAction::GeneratePrimaries()", "MyCode0002", JustWarning, msg);
+        msg << "Unable to cast G4LogicalVolume to G4Box for world and TPC volumes." << G4endl;
+        G4Exception("G4TPCPrimaryGeneratorAction::GeneratePrimaries()", "MyCode0002", EventMustBeAborted, msg);
     }
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
-
-    std::normal_distribution<double> distribution(0.,50.0);
-    std::normal_distribution<double> distribution2(0.,0.2);
-    std::normal_distribution<double> distribution3(1.,0.01);
+    CLHEP::HepRandom::setTheSeed(seed);
 
     // Set gun position
     for (int particle = 0; particle < m_parameters.m_nParticlesPerEvent; particle++)
     {
+        G4ThreeVector startPoint(tpcBox->GetPointOnSurface());
+        G4ThreeVector endPoint(tpcBox->GetPointOnSurface());
+
+        while (std::fabs(startPoint.x() - endPoint.x()) < std::numeric_limits<double>::epsilon() ||
+               std::fabs(startPoint.y() - endPoint.y()) < std::numeric_limits<double>::epsilon() ||
+               std::fabs(startPoint.z() - endPoint.z()) < std::numeric_limits<double>::epsilon())
+        {
+            endPoint = tpcBox->GetPointOnSurface();
+        }
+
+        G4ThreeVector direction(endPoint - startPoint);
+
         G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
         m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
-        m_pG4ParticleGun->SetParticlePosition(G4ThreeVector(distribution(generator)*mm, distribution(generator)*mm, -worldZHalfLength));
-        m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(distribution2(generator), distribution2(generator), distribution3(generator)));
+        m_pG4ParticleGun->SetParticlePosition(startPoint);
+        m_pG4ParticleGun->SetParticleMomentumDirection(direction);
         m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
         m_pG4ParticleGun->GeneratePrimaryVertex(anEvent);
     }

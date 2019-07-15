@@ -37,6 +37,8 @@ public:
     double               m_energy;
     int                  m_nEvents;
     int                  m_nParticlesPerEvent;
+    bool                 m_keepEMShowerDaughters;
+    double               m_energyCut;
 };
 
 #endif // #ifndef INPUT_PARAMETERS_H

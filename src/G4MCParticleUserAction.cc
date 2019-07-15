@@ -12,9 +12,9 @@
 #include "G4Step.hh"
 #include "G4MCParticleUserAction.hh"
 
-G4MCParticleUserAction::G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut) :
+G4MCParticleUserAction::G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut, const bool keepEMShowerDaughters) :
     m_pEventContainer(pEventContainer),
-    m_keepEMShowerDaughters(false),
+    m_keepEMShowerDaughters(keepEMShowerDaughters),
     m_energyCut(energyCut * CLHEP::GeV),
     m_currentPdgCode(0),
     m_currentTrackId(std::numeric_limits<int>::max()),

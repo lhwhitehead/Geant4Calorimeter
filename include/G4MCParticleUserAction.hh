@@ -30,7 +30,7 @@ public:
     /**
      *  Default constructor
      */
-    G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut = 0.001);
+    G4MCParticleUserAction(EventContainer *pEventContainer, const double energyCut = 0.001, const bool keepEMShowerDaughters = false);
 
     /**
      *  Destructor
