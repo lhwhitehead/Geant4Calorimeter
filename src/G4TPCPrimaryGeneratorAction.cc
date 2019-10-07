@@ -32,6 +32,9 @@
 #include <random>
 
 #include "G4TPCPrimaryGeneratorAction.hh"
+#include "G4TPCPrimaryGeneratorMessenger.hh"
+
+#include "ParseGENIETrackerFile.hh"
 
 #include "G4RunManager.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -51,27 +54,40 @@ G4TPCPrimaryGeneratorAction::G4TPCPrimaryGeneratorAction(const InputParameters &
     m_pG4ParticleGun(0),
     m_parameters(parameters)
 {
+    fMessenger = new G4TPCPrimaryGeneratorMessenger(this);
+
     G4int numberOfParticleInstances = 1;
     m_pG4ParticleGun = new G4ParticleGun(numberOfParticleInstances);
 
+    fParser = new ParseGENIETrackerFile(m_pG4ParticleGun);
+
     // default particle kinematic
-    G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
-    m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
-    m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-    m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
+//    G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
+//    m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
+//    m_pG4ParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
+//    m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
 }
 
 //------------------------------------------------------------------------------
 
 G4TPCPrimaryGeneratorAction::~G4TPCPrimaryGeneratorAction()
 {
-    delete m_pG4ParticleGun;
+    if(fParser != nullptr) delete fParser;
+    if(m_pG4ParticleGun != nullptr) delete m_pG4ParticleGun;
+    if(fMessenger != nullptr) delete fMessenger;
+}
+
+void G4TPCPrimaryGeneratorAction::SetTrackerFile(G4String name){
+  fTrackerFile = name;
+  fParser->ReadFile(fTrackerFile);
 }
 
 //------------------------------------------------------------------------------
 
 void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+    std::cout << "Using tracker file? " << fUseTrackerFile << " " << fTrackerFile << std::endl;
+
     // This function is called at the begining of event
 
     // In order to avoid dependence of PrimaryGeneratorAction
@@ -99,27 +115,33 @@ void G4TPCPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     CLHEP::HepRandom::setTheSeed(seed);
 
-    // Set gun position
-    for (int particle = 0; particle < m_parameters.m_nParticlesPerEvent; particle++)
-    {
-        G4ThreeVector startPoint(tpcBox->GetPointOnSurface());
-        G4ThreeVector endPoint(tpcBox->GetPointOnSurface());
+    if(!fUseTrackerFile){
 
-        while (std::fabs(startPoint.x() - endPoint.x()) < std::numeric_limits<double>::epsilon() ||
-               std::fabs(startPoint.y() - endPoint.y()) < std::numeric_limits<double>::epsilon() ||
-               std::fabs(startPoint.z() - endPoint.z()) < std::numeric_limits<double>::epsilon())
+        // Set gun position
+        for (int particle = 0; particle < m_parameters.m_nParticlesPerEvent; particle++)
         {
-            endPoint = tpcBox->GetPointOnSurface();
+            G4ThreeVector startPoint(tpcBox->GetPointOnSurface());
+            G4ThreeVector endPoint(tpcBox->GetPointOnSurface());
+    
+            while (std::fabs(startPoint.x() - endPoint.x()) < std::numeric_limits<double>::epsilon() ||
+                   std::fabs(startPoint.y() - endPoint.y()) < std::numeric_limits<double>::epsilon() ||
+                   std::fabs(startPoint.z() - endPoint.z()) < std::numeric_limits<double>::epsilon())
+            {
+                endPoint = tpcBox->GetPointOnSurface();
+            }
+    
+            G4ThreeVector direction(endPoint - startPoint);
+    
+            G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
+            m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
+            m_pG4ParticleGun->SetParticlePosition(startPoint);
+            m_pG4ParticleGun->SetParticleMomentumDirection(direction);
+            m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
+            m_pG4ParticleGun->GeneratePrimaryVertex(anEvent);
         }
-
-        G4ThreeVector direction(endPoint - startPoint);
-
-        G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_parameters.m_species.c_str());
-        m_pG4ParticleGun->SetParticleDefinition(particleDefinition);
-        m_pG4ParticleGun->SetParticlePosition(startPoint);
-        m_pG4ParticleGun->SetParticleMomentumDirection(direction);
-        m_pG4ParticleGun->SetParticleEnergy(m_parameters.m_energy*GeV);
-        m_pG4ParticleGun->GeneratePrimaryVertex(anEvent);
+    }
+    else{
+        fParser->GenerateEvent(*anEvent);
     }
 }
 

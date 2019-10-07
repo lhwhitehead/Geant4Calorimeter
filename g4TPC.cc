@@ -28,6 +28,8 @@
 /// \file exampleG4TPC.cc
 /// \brief Main program of the G4TPC example
 
+#include <string>
+
 #include "G4TPCDetectorConstruction.hh"
 #include "G4TPCActionInitialization.hh"
 #include "InputParameters.hh"
@@ -52,7 +54,7 @@ namespace
 void PrintUsage()
 {
     G4cerr << " Usage: " << G4endl;
-    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName] [-d keepEMShowerDaughters true/false]" << G4endl;
+    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName] [-d keepEMShowerDaughters true/false] [-t trackerFileName]" << G4endl;
 }
 
 }
@@ -62,11 +64,14 @@ void PrintUsage()
 int main(int argc,char** argv)
 {
     // Evaluate arguments
-    if ( argc > 11 )
+    if ( argc > 12 )
     {
         PrintUsage();
         return 1;
     }
+
+    std::string outputFormat = "xml";
+    std::string trackerFile="";
 
     InputParameters parameters;
 
@@ -102,12 +107,22 @@ int main(int argc,char** argv)
                 parameters.m_keepEMShowerDaughters = false;
             }
         }
+        else if(G4String(argv[i]) == "-t"){
+            trackerFile = argv[i+1];
+            std::cout << "Setting tracker file = " << trackerFile << std::endl;
+        }
+        else if(G4String(argv[i]) == "-f"){
+            outputFormat = argv[i+1];
+            std::cout << "Setting output format to " << outputFormat << std::endl;
+        }
     }
-
-    if (!parameters.Valid())
-    {
-        PrintUsage();
-        return 1;
+    
+    if(trackerFile == ""){
+        if (!parameters.Valid())
+        {
+            PrintUsage();
+            return 1;
+        }
     }
 
     // Choose the Random engine
@@ -127,12 +142,24 @@ int main(int argc,char** argv)
     G4TPCActionInitialization *pG4TPCActionInitialization = new G4TPCActionInitialization(pG4TPCDetectorConstruction, parameters);
     pG4RunManager->SetUserInitialization(pG4TPCActionInitialization);
 
+    // Get the pointer to the User Interface manager
+    G4UImanager* pG4UImanager = G4UImanager::GetUIpointer();
+
+    // Set up the output format for the run manager
+    pG4UImanager->ApplyCommand("/output/filetype " + outputFormat);
+
+    // Set up the way we want to use the primary generator
+    if(trackerFile != ""){
+        std::cout << "Using tracker file " << trackerFile << std::endl;
+        pG4UImanager->ApplyCommand("/mygps/usetracker true");
+        pG4UImanager->ApplyCommand("/mygps/trackerfile " + trackerFile);
+    }
+
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
     pG4VisManager->Initialize();
 
-    // Get the pointer to the User Interface manager
-    G4UImanager* pG4UImanager = G4UImanager::GetUIpointer();
+
     pG4UImanager->ApplyCommand("/run/initialize");
     pG4UImanager->ApplyCommand("/run/beamOn " + std::to_string(parameters.m_nEvents));
 

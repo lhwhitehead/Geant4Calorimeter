@@ -31,6 +31,7 @@
 #include <sstream>
 
 #include "G4TPCRunAction.hh"
+#include "G4TPCRunMessenger.hh"
 #include "G4TPCAnalysis.hh"
 
 #include "G4Run.hh"
@@ -46,6 +47,7 @@ G4TPCRunAction::G4TPCRunAction(EventContainer *pEventContainer, G4MCParticleUser
     m_pG4MCParticleUserAction(pG4MCParticleUserAction)
 {
     G4RunManager::GetRunManager()->SetPrintProgress(1);
+    fMessenger = new G4TPCRunMessenger(this);
 }
 
 //------------------------------------------------------------------------------
@@ -85,6 +87,12 @@ void G4TPCRunAction::BeginOfRunAction(const G4Run *pG4Run)
 void G4TPCRunAction::EndOfRunAction(const G4Run *pG4Run)
 {
     m_pG4MCParticleUserAction->EndOfRunAction(pG4Run);
-    m_pEventContainer->SaveXml();
+//    m_pEventContainer->SaveXml();
+    if(fOutputFileType == "xml"){
+      m_pEventContainer->SaveXml();
+    }
+    else{
+      m_pEventContainer->SaveText();
+    }
 }
 

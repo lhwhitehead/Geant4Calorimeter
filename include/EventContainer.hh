@@ -47,6 +47,11 @@ public:
     void SaveXml();
 
     /**
+    * Save events to text file
+    */
+    void SaveText() const;
+
+    /**
      *  Get the current cell list
      */
     CellList &GetCurrentCellList();
@@ -62,10 +67,13 @@ public:
     void SetCurrentMCParticleList(const MCParticleList &mcParticleList);
 
 private:
+
+    int GetMainVisibleTrackID(const MCParticleList &particles, const IntFloatVector &trkIDToEnergy) const;
+
     typedef std::vector<MCParticleList> MCParticleListVector;
     typedef std::vector<CellList> CellListVector;
 
-    int                  m_eventNumber;
+    unsigned int         m_eventNumber;
     MCParticleListVector m_mcParticles;
     CellListVector       m_cells;
     InputParameters      m_parameters;
