@@ -67,6 +67,7 @@ private:
   TrackerParticle ProcessTrackLine(const std::vector<std::string> &tokens) const;
   std::vector<std::string> TokeniseLine(const std::string &line, const std::string &sep) const;
 
+  void CorrectArgonPDG(int &pdg) const;
 };
 
 #endif

@@ -158,6 +158,11 @@ ParseGENIETrackerFile::TrackerParticle ParseGENIETrackerFile::ProcessTrackLine(c
   TrackerParticle particle;
 
   particle.fPDG = helpers::atoi(tokens[1]);
+  // Need to convert the code into the correct format for argon nuclei
+  if(particle.fPDG == 18040){
+    CorrectArgonPDG(particle.fPDG);
+  }
+
   particle.fEnergy = helpers::atof(tokens[2]);
   particle.fDirection = G4ThreeVector(helpers::atof(tokens[3]),
                                 helpers::atof(tokens[4]),helpers::atof(tokens[5]));
@@ -213,6 +218,17 @@ std::vector<std::string> ParseGENIETrackerFile::TokeniseLine(const std::string &
   
 
   return tokens;
+}
+
+void ParseGENIETrackerFile::CorrectArgonPDG(int &pdg) const{
+
+  // Nuance-style pdg code for argon
+  if(pdg != 18040) return;
+
+  // PDG standard: 100ZZZAAAI:
+  // ZZZ = 018, AAA = 040
+  // hence argon = 1000180400
+  pdg = 1000180400;
 }
 
 
