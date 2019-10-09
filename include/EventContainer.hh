@@ -52,6 +52,11 @@ public:
     void SaveText() const;
 
     /**
+    * Save events in image format
+    **/
+    void SaveImages() const;
+
+    /**
      *  Get the current cell list
      */
     CellList &GetCurrentCellList();

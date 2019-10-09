@@ -99,7 +99,8 @@ void EventContainer::SaveXml()
         }
     }
 
-    tiXmlDocument.SaveFile(m_parameters.m_outputFileName.c_str());
+    // We just supply the root of the file name
+    tiXmlDocument.SaveFile((m_parameters.m_outputFileName+".xml").c_str());
     tiXmlDocument.Clear();
 }
 
@@ -136,6 +137,12 @@ void EventContainer::SaveText() const{
 
     output.close();
   }
+}
+
+void EventContainer::SaveImages() const{
+
+  return;
+
 }
 
 int EventContainer::GetMainVisibleTrackID(const MCParticleList &particles, const IntFloatVector &trkIDToEnergy) const{

@@ -1,0 +1,10 @@
+/mygps/usetracker true
+/mygps/trackerfile /dune/data/users/lwhite86/genie/test_tracker.dat
+
+/output/savexml true
+/output/savetext true
+/output/saveimages true
+
+/run/initialize
+/run/beamOn 1
+

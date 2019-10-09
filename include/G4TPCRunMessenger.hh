@@ -4,6 +4,7 @@
 class G4TPCRunAction;
 class G4UIdirectory;
 class G4UIcmdWithAString;
+class G4UIcmdWithABool;
 
 #include "G4UImessenger.hh"
 #include "globals.hh"
@@ -24,8 +25,11 @@ class G4TPCRunMessenger: public G4UImessenger {
     //commands
     G4UIdirectory* fGenDir;
 //    G4UIcmdWithAString* genCmd;
-    G4UIcmdWithAString* fOutputFileType;
+//    G4UIcmdWithAString* fOutputFileType;
     // Need a second vec file for overlaid events
+    G4UIcmdWithABool* fSaveXml;
+    G4UIcmdWithABool* fSaveText;
+    G4UIcmdWithABool* fSaveImages;
 //    G4UIcmdWithAString* fOverlayNameCmd;
     // Option to enable random vertex positions
 //    G4UIcmdWithABool* fRandomVertexCmd;

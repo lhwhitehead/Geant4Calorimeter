@@ -88,11 +88,16 @@ void G4TPCRunAction::EndOfRunAction(const G4Run *pG4Run)
 {
     m_pG4MCParticleUserAction->EndOfRunAction(pG4Run);
 //    m_pEventContainer->SaveXml();
-    if(fOutputFileType == "xml"){
-      m_pEventContainer->SaveXml();
-    }
-    else{
-      m_pEventContainer->SaveText();
-    }
+//    if(fOutputFileType == "xml"){
+//      m_pEventContainer->SaveXml();
+//    }
+//    else{
+//      m_pEventContainer->SaveText();
+//    }
+
+    if(fSaveXml) m_pEventContainer->SaveXml();
+    if(fSaveText) m_pEventContainer->SaveText();
+    if(fSaveImages) m_pEventContainer->SaveImages();
+
 }
 

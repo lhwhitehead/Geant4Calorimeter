@@ -66,14 +66,20 @@ public:
     virtual void BeginOfRunAction(const G4Run *pG4Run);
     virtual void EndOfRunAction(const G4Run *pG4Run);
 
-    void SetOutputFileType(G4String name){fOutputFileType=name;};
+//    void SetOutputFileType(G4String name){fOutputFileType=name;};
+    void SetSaveXml(bool val){fSaveXml = val;};  
+    void SetSaveText(bool val){fSaveText = val;};  
+    void SetSaveImages(bool val){fSaveImages = val;};  
 
 private:
     EventContainer         *m_pEventContainer;
     G4MCParticleUserAction *m_pG4MCParticleUserAction;
     G4TPCRunMessenger *fMessenger;
 
-    std::string fOutputFileType;
+//    std::string fOutputFileType;
+    bool fSaveXml;
+    bool fSaveText;
+    bool fSaveImages;
 };
 
 #endif

@@ -33,6 +33,7 @@
 #include "G4TPCDetectorConstruction.hh"
 #include "G4TPCActionInitialization.hh"
 #include "InputParameters.hh"
+#include "ReadMacFile.hh"
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -54,7 +55,7 @@ namespace
 void PrintUsage()
 {
     G4cerr << " Usage: " << G4endl;
-    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName] [-d keepEMShowerDaughters true/false] [-t trackerFileName]" << G4endl;
+    G4cerr << " g4TPC [-n nEvents ] [-s species] [-e energy] [-o outputFileName] [-d keepEMShowerDaughters true/false] [-t trackerFileName] [-m macfile]" << G4endl;
 }
 
 }
@@ -72,6 +73,7 @@ int main(int argc,char** argv)
 
     std::string outputFormat = "xml";
     std::string trackerFile="";
+    std::string macfile="";
 
     InputParameters parameters;
 
@@ -115,9 +117,13 @@ int main(int argc,char** argv)
             outputFormat = argv[i+1];
             std::cout << "Setting output format to " << outputFormat << std::endl;
         }
+        else if(G4String(argv[i]) == "-m"){
+            macfile = argv[i+1];
+            std::cout << "Setting configuration macfile to " << macfile << std::endl;
+        }
     }
     
-    if(trackerFile == ""){
+    if(trackerFile == "" && macfile == ""){
         if (!parameters.Valid())
         {
             PrintUsage();
@@ -125,6 +131,13 @@ int main(int argc,char** argv)
         }
     }
 
+    // Read the mac file if we have one
+    ReadMacFile macReader;
+    bool useMac = (macfile != "");
+    if(useMac){
+      macReader.ReadFile(macfile);
+    }
+    
     // Choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
@@ -146,22 +159,42 @@ int main(int argc,char** argv)
     G4UImanager* pG4UImanager = G4UImanager::GetUIpointer();
 
     // Set up the output format for the run manager
-    pG4UImanager->ApplyCommand("/output/filetype " + outputFormat);
+    if(useMac){
+      for(const std::string &s : macReader.GetRunActionCommands()){
+        pG4UImanager->ApplyCommand(s);
+      }
+    }
+    else{
+      pG4UImanager->ApplyCommand("/output/filetype " + outputFormat);
+    }
 
     // Set up the way we want to use the primary generator
-    if(trackerFile != ""){
+    if(useMac){
+      for(const std::string &s : macReader.GetPrimaryGeneratorCommands()){
+        pG4UImanager->ApplyCommand(s);
+      }
+    }
+    else{
+      if(trackerFile != ""){
         std::cout << "Using tracker file " << trackerFile << std::endl;
         pG4UImanager->ApplyCommand("/mygps/usetracker true");
         pG4UImanager->ApplyCommand("/mygps/trackerfile " + trackerFile);
+      }
     }
 
     // Initialize visualization
     G4VisManager* pG4VisManager = new G4VisExecutive;
     pG4VisManager->Initialize();
 
-
-    pG4UImanager->ApplyCommand("/run/initialize");
-    pG4UImanager->ApplyCommand("/run/beamOn " + std::to_string(parameters.m_nEvents));
+    if(useMac){
+      for(const std::string &s : macReader.GetRunG4Commands()){
+        pG4UImanager->ApplyCommand(s);
+      }
+    }
+    else{
+      pG4UImanager->ApplyCommand("/run/initialize");
+      pG4UImanager->ApplyCommand("/run/beamOn " + std::to_string(parameters.m_nEvents));
+    }
 
     // Job termination
     // Free the store: user actions, physics_list and detector_description are
